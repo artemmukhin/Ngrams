@@ -1,5 +1,43 @@
 #include "NgramTree.h"
 
+Node::Node(string val)
+{
+    this->prefix = val;
+    this->left = nullptr;
+    this->right = nullptr;
+}
+
+Node::Node(string val, Node *left, Node *right)
+{
+    this->prefix = val;
+    this->left = left;
+    this->right = right;
+}
+
+void Node::print() const
+{
+    cout << prefix << ":" << endl;
+    for (int i = 0; i < suffixes.size(); i++)
+        cout << "    " << prefix << suffixes[i] << endl;
+}
+
+void Node::addSuffix(string suff)
+{
+    suffixes.push_back(suff);
+}
+
+void Node::removeSuffix(string suff)
+{
+    suffixes.erase(std::remove(suffixes.begin(), suffixes.end(), suff), suffixes.end());
+}
+
+void Node::swapWithNode(Node *other)
+{
+    string tempPrefix = this->prefix;
+    vector<string> tempSuffixes = this->suffixes;
+
+}
+
 NgramTree::NgramTree()
 {
     root = nullptr;
@@ -7,25 +45,25 @@ NgramTree::NgramTree()
 
 void NgramTree::addHelper(Node *start, string prefix, string suffix)
 {
-    if (start->getPrefix().compare(prefix) == 0) {
+    if (start->prefix == prefix) {
         start->addSuffix(suffix);
     }
 
-    else if (start->getPrefix().compare(prefix) > 0) {
-        if (!start->getLeft()) {
-            start->setLeft(new Node(prefix));
-            start->getLeft()->addSuffix(suffix);
+    else if (start->prefix.compare(prefix) > 0) {
+        if (!start->left) {
+            start->left = new Node(prefix);
+            start->left->addSuffix(suffix);
         }
         else
-            addHelper(start->getLeft(), prefix, suffix);
+            addHelper(start->left, prefix, suffix);
     }
     else {
-        if (!start->getRight()) {
-            start->setRight(new Node(prefix));
-            start->getRight()->addSuffix(suffix);
+        if (!start->right) {
+            start->right = new Node(prefix);
+            start->right->addSuffix(suffix);
         }
         else
-            addHelper(start->getRight(), prefix, suffix);
+            addHelper(start->right, prefix, suffix);
     }
 }
 
@@ -33,7 +71,8 @@ void NgramTree::add(string val)
 {
     string prefix;
     string suffix;
-    int i;
+    size_t i;
+
     for (i = 0; i < val.length() && val[i] != ' '; i++);
     prefix = val.substr(0, i);
     suffix = val.substr(i, val.length());
@@ -51,9 +90,9 @@ void NgramTree::printHelper(Node *start)
 {
     if (!start)
         return;
-    printHelper(start->getLeft());
+    printHelper(start->left);
     start->print();
-    printHelper(start->getRight());
+    printHelper(start->right);
 }
 
 void NgramTree::print()
@@ -61,47 +100,70 @@ void NgramTree::print()
     printHelper(this->root);
 }
 
+bool NgramTree::removeHelper(Node *parent, Node *current, string prefix, string suffix)
+{
+    // Если в узле всего один суффикс, то можно либо полностью удалить узел,
+    // либо оставить его (получится узел без суффиксов). Пока оставил второй вариант
 
-/*
-bool NgramTree::removeHelper(Node *parent, Node *current, string prefix, string suffix) {
     if (!current)
         return false;
-    if (current->getPrefix() == prefix) {
-        if (current->getLeft() == nullptr || current->getRight() == nullptr) {
-            Node *temp = current->getLeft();
-            if (current->getRight())
-                temp = current->getRight();
-            if (parent) {
-                if (parent->getRight() == current) {
-                    parent->setLeft(temp);
-                }
-                else {
-                    parent->setRight(temp);
-                }
-            }
-            else {
-                this->root = temp;
-            }
-        }
-        else {
-            Node *validSubs = current->getRight();
-            while (validSubs->getLeft()) {
-                validSubs = validSubs->getLeft();
-            }
-            string temp = current->value;
-            current->value = validSubs->value;
-            validSubs->value = temp;
-            return deleteValueHelper(current, current->right, temp);
-        }
-        delete current;
+
+    if (current->prefix == prefix) {
+        current->removeSuffix(suffix);
         return true;
     }
-    return deleteValueHelper(current, current->left, value) ||
-           deleteValueHelper(current, current->right, value);
+
+    return removeHelper(current, current->left, prefix, suffix) ||
+        removeHelper(current, current->right, prefix, suffix);
 }
 
-
-bool NgramTree::remove(string value) {
-    return this->deleteValueHelper(NULL, this->root, value);
+bool NgramTree::remove(string prefix, string suffix)
+{
+    return this->removeHelper(nullptr, this->root, prefix, suffix);
 }
-*/
+
+const vector<string> *NgramTree::suffixesOf(string prefix) const
+{
+    Node *current = this->root;
+    while (current) {
+        if (current->prefix == prefix && current->suffixes.size() > 0)
+            return &current->suffixes;
+        if (current->prefix > prefix)
+            current = current->left;
+        else
+            current = current->right;
+    }
+    return nullptr;
+}
+
+string NgramTree::searchInText(string text)
+{
+    size_t i = 0;
+    string currWord = "";
+    string result = "";
+    const vector<string> *suffixes;
+    set<string> foundStrings;
+
+    while (i < text.length()) {
+        if (text[i] == ' ') {
+            suffixes = this->suffixesOf(currWord);
+            if (suffixes) {
+                for (auto suffix : *suffixes) {
+                    for (size_t j = 0; j < suffix.size(); j++) {
+                        if (text[i + j] != suffix[j])
+                            break;
+                    }
+                    foundStrings.insert(currWord + suffix);
+                }
+            }
+            currWord = "";
+            i++;
+        }
+        currWord += text[i++];
+    }
+
+    for (string str : foundStrings)
+        result += str + '|';
+    result.pop_back();
+    return result;
+}

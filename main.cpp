@@ -15,8 +15,7 @@ int main()
     int i;
     NgramTree ngrams;
 
-    threadpool thpool;
-    //threadpool thpool = thpool_init(NUM_THREADS);
+    threadpool thpool = thpool_init(NUM_THREADS);
 
     string query = "";
     getline(cin, query);
@@ -26,6 +25,41 @@ int main()
     } while (query != "S");
 
     ngrams.print();
+    cout << endl;
+
+    query = "";
+    getline(cin, query);
+    do {
+        switch (query[0]) {
+            case 'Q':
+                query.erase(0, 2);
+                cout << ngrams.searchInText(query) << endl;
+                break;
+
+            case 'A':
+                query.erase(0, 2);
+                ngrams.add(query);
+                break;
+
+            case 'D':
+                query.erase(0, 2);
+                string prefix = "";
+                string suffix = "";
+                size_t j;
+                for (j = 0; j < query.length() && query[j] != ' '; j++);
+                prefix = query.substr(0, j);
+                suffix = query.substr(j, query.length());
+                ngrams.remove(prefix, suffix);
+                break;
+        }
+
+        cout << endl;
+        ngrams.print();
+        cout << endl;
+
+        getline(cin, query);
+    } while (query != "F");
+
 
     //thpool_add_work(thpool, (void*)task1, NULL);
 

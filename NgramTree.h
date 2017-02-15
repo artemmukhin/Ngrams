@@ -2,6 +2,8 @@
 #include <math.h>
 #include <string>
 #include <vector>
+#include <algorithm>
+#include <set>
 using namespace std;
 
 /*
@@ -21,6 +23,8 @@ prefix="earth",suffixes=["a b c"]--------|
 
 class Node
 {
+    friend class NgramTree;
+
 private:
     string prefix;
     vector<string> suffixes;
@@ -29,54 +33,17 @@ private:
     Node *right;
 
 public:
-    Node(string val)
-    {
-        this->prefix = val;
-    }
+    Node(string val);
 
-    Node(string val, Node *left, Node *right)
-    {
-        this->prefix = val;
-        this->left = left;
-        this->right = right;
-    }
+    Node(string val, Node *left, Node *right);
 
-    void addSuffix(string suff)
-    {
-        suffixes.push_back(suff);
-    }
+    void print() const;
 
-    void print()
-    {
-        cout << prefix << ":" << endl;
-        for (int i = 0; i < suffixes.size(); i++)
-            cout << "    " << prefix << suffixes[i] << endl;
-    }
+    void addSuffix(string suff);
 
-    string getPrefix()
-    {
-        return prefix;
-    }
+    void removeSuffix(string suff);
 
-    Node *getLeft()
-    {
-        return left;
-    }
-
-    Node *getRight()
-    {
-        return right;
-    }
-
-    void setLeft(Node *newLeft)
-    {
-        left = newLeft;
-    }
-
-    void setRight(Node *newRight)
-    {
-        right = newRight;
-    }
+    void swapWithNode(Node *other);
 };
 
 class NgramTree
@@ -88,7 +55,7 @@ private:
 
     void printHelper(Node *start);
 
-    //bool removeHelper(Node *parent, Node *current, string prefix, string suffix);
+    bool removeHelper(Node *parent, Node *current, string prefix, string suffix);
 
 public:
     NgramTree();
@@ -97,5 +64,9 @@ public:
 
     void print();
 
-    //bool remove(string val);
+    bool remove(string prefix, string suffix);
+
+    const vector<string> *suffixesOf(string prefix) const;
+
+    string searchInText(string text);
 };
