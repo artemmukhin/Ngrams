@@ -24,8 +24,9 @@ int main()
         getline(cin, query);
     } while (query != "S");
 
-    ngrams.print();
-    cout << endl;
+    cout << "R" << endl;
+    //ngrams.print();
+    //cout << endl;
 
     query = "";
     getline(cin, query);
@@ -53,9 +54,9 @@ int main()
                 break;
         }
 
-        cout << endl;
-        ngrams.print();
-        cout << endl;
+        //cout << endl;
+        //ngrams.print();
+        //cout << endl;
 
         getline(cin, query);
     } while (query != "F");
@@ -63,36 +64,5 @@ int main()
 
     //thpool_add_work(thpool, (void*)task1, NULL);
 
-    /*
-
-    for (i = 0; i < NUM_THREADS; i++) {
-        cout << "main() : creating thread, " << i << endl;
-        rc = pthread_create(&threads[i], &attr, wait, (void *)i);
-
-        if (rc) {
-            cout << "Error:unable to create thread," << rc << endl;
-            exit(-1);
-        }
-    }
-
-    // free attribute and wait for the other threads
-    pthread_attr_destroy(&attr);
-
-    for (i = 0; i < NUM_THREADS; i++) {
-        cout << "Waiting for thread " << i << endl;
-        rc = pthread_join(threads[i], &status);
-
-        if (rc){
-            cout << "Error:unable to join," << rc << endl;
-            exit(-1);
-        }
-
-        cout << "Main: completed thread id: " << i ;
-        cout << "  exiting with status: " << status << endl;
-    }
-
-    cout << "Main: program exiting." << endl;
-    pthread_exit(NULL);
-    */
     return 0;
 }

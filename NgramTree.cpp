@@ -142,18 +142,27 @@ string NgramTree::searchInText(string text)
     string currWord = "";
     string result = "";
     const vector<string> *suffixes;
-    set<string> foundStrings;
+    set<const string *> foundStrings;
+
 
     while (i < text.length()) {
         if (text[i] == ' ') {
             suffixes = this->suffixesOf(currWord);
             if (suffixes) {
-                for (auto suffix : *suffixes) {
-                    for (size_t j = 0; j < suffix.size(); j++) {
-                        if (text[i + j] != suffix[j])
+                for (size_t it = 0; it < suffixes->size(); it++) {
+                    if (foundStrings.find(&((*suffixes)[it])) != foundStrings.end())
+                        continue;
+                    bool flag = true;
+                    for (size_t j = 0; j < (*suffixes)[it].length(); j++) {
+                        if (text[i + j] != (*suffixes)[it][j]) {
+                            flag = false;
                             break;
+                        }
                     }
-                    foundStrings.insert(currWord + suffix);
+                    if (flag) {
+                        foundStrings.insert(&(*suffixes)[it]);
+                        result += currWord + (*suffixes)[it] + "|";
+                    }
                 }
             }
             currWord = "";
@@ -162,8 +171,7 @@ string NgramTree::searchInText(string text)
         currWord += text[i++];
     }
 
-    for (string str : foundStrings)
-        result += str + '|';
-    result.pop_back();
+    if (result != "")
+        result.pop_back();
     return result;
 }
