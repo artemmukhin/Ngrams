@@ -1,0 +1,10 @@
+.idea/
+CMakeCache.txt
+CMakeFiles/
+Makefile
+Ngrams
+Ngrams.cbp
+cmake_install.cmake
+submit/buf
+submit/test-harness
+submit/submission.tar.gz
