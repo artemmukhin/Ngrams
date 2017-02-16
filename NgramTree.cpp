@@ -21,7 +21,8 @@ void Node::print() const
         cout << "    " << prefix << suffixes[i] << endl;
 }
 
-bool stringCompare(const string &left, const string &right) {
+bool stringCompare(const string &left, const string &right)
+{
     return left.size() < right.size();
 }
 
@@ -150,8 +151,8 @@ string NgramTree::searchInText(string text)
     set<const string *> foundStrings;
 
 
-    while (i < text.length()) {
-        if (text[i] == ' ') {
+    while (i <= text.length()) {
+        if (text[i] == ' ' || i == text.length()) {
             suffixes = this->suffixesOf(currWord);
             if (suffixes) {
                 for (size_t it = 0; it < suffixes->size(); it++) {
@@ -165,7 +166,7 @@ string NgramTree::searchInText(string text)
                             break;
                         }
                     }
-                    if (text[i+j] != ' ' && (i+j) != text.length() - 1)
+                    if (text[i + j] != ' ' && (i + j) != text.length())
                         flag = false;
                     if (flag) {
                         foundStrings.insert(&(*suffixes)[it]);
