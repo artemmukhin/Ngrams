@@ -21,9 +21,14 @@ void Node::print() const
         cout << "    " << prefix << suffixes[i] << endl;
 }
 
+bool stringCompare(const string &left, const string &right) {
+    return left.size() < right.size();
+}
+
 void Node::addSuffix(string suff)
 {
     suffixes.push_back(suff);
+    std::sort(suffixes.begin(), suffixes.end(), stringCompare);
 }
 
 void Node::removeSuffix(string suff)
@@ -153,12 +158,15 @@ string NgramTree::searchInText(string text)
                     if (foundStrings.find(&((*suffixes)[it])) != foundStrings.end())
                         continue;
                     bool flag = true;
-                    for (size_t j = 0; j < (*suffixes)[it].length(); j++) {
+                    size_t j;
+                    for (j = 0; j < (*suffixes)[it].length(); j++) {
                         if (text[i + j] != (*suffixes)[it][j]) {
                             flag = false;
                             break;
                         }
                     }
+                    if (text[i+j] != ' ' && (i+j) != text.length() - 1)
+                        flag = false;
                     if (flag) {
                         foundStrings.insert(&(*suffixes)[it]);
                         result += currWord + (*suffixes)[it] + "|";
