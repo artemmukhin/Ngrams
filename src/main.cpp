@@ -2,6 +2,7 @@
 #include <cstdlib>
 #include <pthread.h>
 #include <cstdint>
+#include <sstream>
 #include "NgramTree.h"
 #include "thpool.h"
 
@@ -19,22 +20,32 @@ int main()
 
     string query = "";
     getline(cin, query);
-    do {
+    while (query != "S") {
         ngrams.add(query);
         getline(cin, query);
-    } while (query != "S");
+    }
 
     cout << "R" << endl;
     //ngrams.print();
     //cout << endl;
 
     query = "";
-    getline(cin, query);
-    do {
+    std::stringstream buffer;
+
+    while (std::getline(std::cin, query)) {
+        if (query == "F") {
+            std::cout << buffer.str() << std::flush;
+            buffer.str(std::string());
+            buffer.clear();
+            continue;
+        }
+        string prefix;
+        string suffix;
+        size_t j;
         switch (query[0]) {
             case 'Q':
                 query.erase(0, 2);
-                cout << ngrams.searchInText(query) << endl;
+                buffer << ngrams.searchInText(query) << endl << std::flush;
                 break;
 
             case 'A':
@@ -44,23 +55,22 @@ int main()
 
             case 'D':
                 query.erase(0, 2);
-                string prefix = "";
-                string suffix = "";
-                size_t j;
+                prefix = "";
+                suffix = "";
                 for (j = 0; j < query.length() && query[j] != ' '; j++);
                 prefix = query.substr(0, j);
                 suffix = query.substr(j, query.length());
                 ngrams.remove(prefix, suffix);
                 break;
+            default:
+                std::cerr << "Error unrecognized line: \"" << query << "\"" << std::endl;
+                return 1;
         }
 
         //cout << endl;
         //ngrams.print();
         //cout << endl;
-
-        getline(cin, query);
-    } while (query != "F");
-
+    }
 
     //thpool_add_work(thpool, (void*)task1, NULL);
 

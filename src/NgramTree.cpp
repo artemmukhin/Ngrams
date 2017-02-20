@@ -182,5 +182,7 @@ string NgramTree::searchInText(string text)
 
     if (result != "")
         result.pop_back();
+    else
+        result = "-1";
     return result;
 }
