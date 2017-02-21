@@ -73,7 +73,7 @@ void NgramTree::addHelper(Node *start, string prefix, string suffix)
     }
 }
 
-void NgramTree::add(string val)
+void NgramTree::add(string &val)
 {
     string prefix;
     string suffix;
@@ -123,9 +123,14 @@ bool NgramTree::removeHelper(Node *parent, Node *current, string prefix, string 
         removeHelper(current, current->right, prefix, suffix);
 }
 
-bool NgramTree::remove(string prefix, string suffix)
+bool NgramTree::remove(string &val)
 {
-    return this->removeHelper(nullptr, this->root, prefix, suffix);
+    string prefix;
+    string suffix;
+    size_t i;
+
+    for (i = 0; i < val.length() && val[i] != ' '; i++);
+    return this->removeHelper(nullptr, this->root, val.substr(0, i), val.substr(i, val.length()));
 }
 
 const vector<string> *NgramTree::suffixesOf(string prefix) const
@@ -142,11 +147,10 @@ const vector<string> *NgramTree::suffixesOf(string prefix) const
     return nullptr;
 }
 
-string NgramTree::searchInText(string text)
+void NgramTree::searchInText(string &text, vector<string> &result)
 {
     size_t i = 0;
     string currWord = "";
-    string result = "";
     const vector<string> *suffixes;
     set<const string *> foundStrings;
 
@@ -170,7 +174,7 @@ string NgramTree::searchInText(string text)
                         flag = false;
                     if (flag) {
                         foundStrings.insert(&(*suffixes)[it]);
-                        result += currWord + (*suffixes)[it] + "|";
+                        result.push_back(currWord + (*suffixes)[it]);
                     }
                 }
             }
@@ -179,10 +183,4 @@ string NgramTree::searchInText(string text)
         }
         currWord += text[i++];
     }
-
-    if (result != "")
-        result.pop_back();
-    else
-        result = "-1";
-    return result;
 }

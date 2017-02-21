@@ -1,78 +1,69 @@
 #include <iostream>
-#include <cstdlib>
 #include <pthread.h>
-#include <cstdint>
 #include <sstream>
-#include "NgramTree.h"
-#include "thpool.h"
 
-#define NUM_THREADS 4
+#include "Solver.h"
 
 using namespace std;
 
 int main()
 {
-    int rc;
-    int i;
-    NgramTree ngrams;
-
-    threadpool thpool = thpool_init(NUM_THREADS);
+    Solver solver;
 
     string query = "";
     getline(cin, query);
     while (query != "S") {
-        ngrams.add(query);
+        solver.add(query, 0);
         getline(cin, query);
     }
 
+    solver.rebuild();
+
     cout << "R" << endl;
-    //ngrams.print();
-    //cout << endl;
 
-    query = "";
-    std::stringstream buffer;
+    string texts[NUM_THREADS];
+    int text_num[NUM_THREADS];
+    int text_count = 0;
 
+    int num = 0;
     while (std::getline(std::cin, query)) {
+        num++;
         if (query == "F") {
-            std::cout << buffer.str() << std::flush;
-            buffer.str(std::string());
-            buffer.clear();
-            continue;
+            solver.solve(texts, text_num, text_count);
+            std::cout.flush();
+            return 0;
         }
         string prefix;
         string suffix;
-        size_t j;
+
         switch (query[0]) {
             case 'Q':
                 query.erase(0, 2);
-                buffer << ngrams.searchInText(query) << endl << std::flush;
+                texts[text_count] = query;
+                text_num[text_count] = num;
+                text_count++;
+
+                if(text_count == NUM_THREADS){
+                    solver.solve(texts, text_num, text_count);
+                    text_count = 0;
+                }
+
                 break;
 
             case 'A':
                 query.erase(0, 2);
-                ngrams.add(query);
+                solver.add(query, num);
                 break;
 
             case 'D':
                 query.erase(0, 2);
-                prefix = "";
-                suffix = "";
-                for (j = 0; j < query.length() && query[j] != ' '; j++);
-                prefix = query.substr(0, j);
-                suffix = query.substr(j, query.length());
-                ngrams.remove(prefix, suffix);
+                solver.remove(query, num);
                 break;
             default:
                 std::cerr << "Error unrecognized line: \"" << query << "\"" << std::endl;
                 return 1;
         }
-
-        //cout << endl;
-        //ngrams.print();
-        //cout << endl;
     }
-
-    //thpool_add_work(thpool, (void*)task1, NULL);
 
     return 0;
 }

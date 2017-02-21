@@ -60,13 +60,13 @@ private:
 public:
     NgramTree();
 
-    void add(string val);
+    void add(string &val);
 
     void print();
 
-    bool remove(string prefix, string suffix);
+    bool remove(string &val);
 
     const vector<string> *suffixesOf(string prefix) const;
 
-    string searchInText(string text);
+    void searchInText(string &text, vector<string> &result);
 };
