@@ -11,15 +11,9 @@
 #include "NgramTree.h"
 
 
-#define NUM_THREADS 2
+#define NUM_THREADS 4
 
 class Solver {
-
-    struct Changes{
-        string ngram;
-        int action; // -1 - deletion, 1 - addition
-        int num;
-    };
 
     struct ThreadData {
         string * text;
@@ -37,7 +31,6 @@ class Solver {
     };
 
     NgramTree ngrams;
-    vector<Changes> changes;
 
     string result[NUM_THREADS];
 

@@ -31,7 +31,7 @@ int main()
         if (query == "F") {
             solver.solve(texts, text_num, text_count);
             std::cout.flush();
-            return 0;
+            continue;
         }
         string prefix;
         string suffix;

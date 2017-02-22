@@ -12,18 +12,14 @@ Solver::Solver() {
 }
 
 void Solver::add(string& ngram, int num){
-    ngrams.add(ngram);
-    changes.push_back({ngram, 1, num});
+    ngrams.add(ngram, num);
 }
 
 void Solver::remove(string& ngram, int num){
-    changes.push_back({ngram, -1, num});
+    ngrams.remove(ngram, num);
 }
 void Solver::rebuild(){
-    for(int i = 0; i < changes.size(); i++)
-        if(changes[i].action == -1)
-            ngrams.remove(changes[i].ngram);
-    changes.clear();
+    ngrams.clear();
 }
 
 void Solver::solve(string* texts, int* nums, int count) {
@@ -55,7 +51,7 @@ void Solver::solve(string* texts, int* nums, int count) {
 void* Solver::compute(void* data){
     vector<string> result;
     ThreadData *tdata = (ThreadData*)data;
-    tdata->solver->ngrams.searchInText(*tdata->text, result);
+    tdata->solver->ngrams.searchInText(*tdata->text, result, tdata->num);
 
     if(result.size() == 0) {
         tdata->solver->result[tdata->thread_num] = "-1";
@@ -63,29 +59,16 @@ void* Solver::compute(void* data){
     }
 
     string res_str = "";
-    vector<Changes> *changes = &tdata->solver->changes;
 
-    for(int i = 0; i < result.size(); i++) {
-        bool isUsed = true;
-        for (int j = 0; j < changes->size(); j++) {
-            if (tdata->num > (*changes)[j].num){
-                if (result[i] == (*changes)[j].ngram)
-                    isUsed = (*changes)[j].action != -1;
-            }else
-                break;
-        }
-
-        if(isUsed)
-            if(res_str.size() == 0)
-                res_str = result[i];
-            else
-                res_str += "|" + result[i];
-
-    }
+    for(int i = 0; i < result.size(); i++)
+        if(res_str.size() == 0)
+            res_str = result[i];
+        else
+            res_str += "|" + result[i];
 
     res_str += "\n";
     tdata->solver->result[tdata->thread_num] = res_str;
+    //cout << "End thread " << tdata->thread_num << std::endl;
     delete tdata;
     pthread_exit(NULL);
-    //cout << "End thread " << tdata->thread_num << std::endl;
 }

@@ -21,29 +21,34 @@ prefix="earth",suffixes=["a b c"]--------|
 
 */
 
+struct Suffix{
+
+    struct Action{
+        int num;
+        int action;
+    };
+    string suffix;
+    vector<Action> actions;
+};
+
 class Node
 {
     friend class NgramTree;
 
 private:
     string prefix;
-    vector<string> suffixes;
+    vector<Suffix> suffixes;
 
     Node *left;
     Node *right;
 
 public:
     Node(string val);
-
     Node(string val, Node *left, Node *right);
 
-    void print() const;
-
-    void addSuffix(string suff);
-
-    void removeSuffix(string suff);
-
-    void swapWithNode(Node *other);
+    void addSuffix(string suff, int num);
+    void removeSuffix(string suff, int num);
+    void clear();
 };
 
 class NgramTree
@@ -51,22 +56,16 @@ class NgramTree
 private:
     Node *root;
 
-    void addHelper(Node *start, string prefix, string suffix);
-
-    void printHelper(Node *start);
-
-    bool removeHelper(Node *parent, Node *current, string prefix, string suffix);
+    void addHelper(Node *start, string prefix, string suffix, int num);
+    void removeHelper(Node *parent, Node *current, string prefix, string suffix, int num);
 
 public:
     NgramTree();
 
-    void add(string &val);
+    void add(string &val, int num);
+    void remove(string &val, int num);
+    void clear();
 
-    void print();
-
-    bool remove(string &val);
-
-    const vector<string> *suffixesOf(string prefix) const;
-
-    void searchInText(string &text, vector<string> &result);
+    const vector<Suffix> *suffixesOf(string prefix) const;
+    void searchInText(string &text, vector<string> &result, int num);
 };
