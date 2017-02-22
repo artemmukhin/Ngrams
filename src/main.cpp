@@ -1,10 +1,7 @@
 #include <iostream>
-#include <cstdlib>
-#include <pthread.h>
-#include <cstdint>
 #include <sstream>
+#include <cstdio>
 #include "NgramTree.h"
-#include "thpool.h"
 
 #define NUM_THREADS 4
 
@@ -12,11 +9,7 @@ using namespace std;
 
 int main()
 {
-    int rc;
-    int i;
     NgramTree ngrams;
-
-    threadpool thpool = thpool_init(NUM_THREADS);
 
     string query = "";
     getline(cin, query);
@@ -24,17 +17,15 @@ int main()
         ngrams.add(query);
         getline(cin, query);
     }
-
-    cout << "R" << endl;
-    //ngrams.print();
-    //cout << endl;
+    puts("R\n");
 
     query = "";
     std::stringstream buffer;
 
     while (std::getline(std::cin, query)) {
         if (query == "F") {
-            std::cout << buffer.str() << std::flush;
+            puts(buffer.str().c_str());
+            fflush(stdout);
             buffer.str(std::string());
             buffer.clear();
             continue;
@@ -71,8 +62,6 @@ int main()
         //ngrams.print();
         //cout << endl;
     }
-
-    //thpool_add_work(thpool, (void*)task1, NULL);
 
     return 0;
 }

@@ -1,9 +1,9 @@
-#include <iostream>
 #include <math.h>
 #include <string>
 #include <vector>
-#include <algorithm>
 #include <set>
+#include "Node.h"
+
 using namespace std;
 
 /*
@@ -21,30 +21,6 @@ prefix="earth",suffixes=["a b c"]--------|
 
 */
 
-class Node
-{
-    friend class NgramTree;
-
-private:
-    string prefix;
-    vector<string> suffixes;
-
-    Node *left;
-    Node *right;
-
-public:
-    Node(string val);
-
-    Node(string val, Node *left, Node *right);
-
-    void print() const;
-
-    void addSuffix(string suff);
-
-    void removeSuffix(string suff);
-
-    void swapWithNode(Node *other);
-};
 
 class NgramTree
 {
@@ -66,7 +42,7 @@ public:
 
     bool remove(string prefix, string suffix);
 
-    const vector<string> *suffixesOf(string prefix) const;
+    const list<string> *suffixesOf(string prefix) const;
 
     string searchInText(string text);
 };

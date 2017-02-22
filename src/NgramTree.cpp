@@ -1,49 +1,5 @@
 #include "NgramTree.h"
 
-Node::Node(string val)
-{
-    this->prefix = val;
-    this->left = nullptr;
-    this->right = nullptr;
-}
-
-Node::Node(string val, Node *left, Node *right)
-{
-    this->prefix = val;
-    this->left = left;
-    this->right = right;
-}
-
-void Node::print() const
-{
-    cout << prefix << ":" << endl;
-    for (int i = 0; i < suffixes.size(); i++)
-        cout << "    " << prefix << suffixes[i] << endl;
-}
-
-bool stringCompare(const string &left, const string &right)
-{
-    return left.size() < right.size();
-}
-
-void Node::addSuffix(string suff)
-{
-    suffixes.push_back(suff);
-    std::sort(suffixes.begin(), suffixes.end(), stringCompare);
-}
-
-void Node::removeSuffix(string suff)
-{
-    suffixes.erase(std::remove(suffixes.begin(), suffixes.end(), suff), suffixes.end());
-}
-
-void Node::swapWithNode(Node *other)
-{
-    string tempPrefix = this->prefix;
-    vector<string> tempSuffixes = this->suffixes;
-
-}
-
 NgramTree::NgramTree()
 {
     root = nullptr;
@@ -128,7 +84,7 @@ bool NgramTree::remove(string prefix, string suffix)
     return this->removeHelper(nullptr, this->root, prefix, suffix);
 }
 
-const vector<string> *NgramTree::suffixesOf(string prefix) const
+const list<string> *NgramTree::suffixesOf(string prefix) const
 {
     Node *current = this->root;
     while (current) {
@@ -144,24 +100,24 @@ const vector<string> *NgramTree::suffixesOf(string prefix) const
 
 string NgramTree::searchInText(string text)
 {
-    size_t i = 0;
     string currWord = "";
     string result = "";
-    const vector<string> *suffixes;
+    const list<string> *suffixes;
     set<const string *> foundStrings;
-
+    size_t i = 0;
+    list<string>::const_iterator it;
 
     while (i <= text.length()) {
         if (text[i] == ' ' || i == text.length()) {
             suffixes = this->suffixesOf(currWord);
             if (suffixes) {
-                for (size_t it = 0; it < suffixes->size(); it++) {
-                    if (foundStrings.find(&((*suffixes)[it])) != foundStrings.end())
+                for (it = suffixes->begin(); it != suffixes->end(); it++) {
+                    if (foundStrings.find(&(*it)) != foundStrings.end())
                         continue;
                     bool flag = true;
                     size_t j;
-                    for (j = 0; j < (*suffixes)[it].length(); j++) {
-                        if (text[i + j] != (*suffixes)[it][j]) {
+                    for (j = 0; j < (*it).length(); j++) {
+                        if (text[i + j] != (*it)[j]) {
                             flag = false;
                             break;
                         }
@@ -169,8 +125,8 @@ string NgramTree::searchInText(string text)
                     if (text[i + j] != ' ' && (i + j) != text.length())
                         flag = false;
                     if (flag) {
-                        foundStrings.insert(&(*suffixes)[it]);
-                        result += currWord + (*suffixes)[it] + "|";
+                        foundStrings.insert(&(*it));
+                        result += currWord + (*it) + "|";
                     }
                 }
             }
