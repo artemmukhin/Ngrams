@@ -2,6 +2,7 @@
 
 HashTable::HashTable()
 {
+    table = new NgramTree *[CAPACITY];
     for (uint64_t i = 0; i < CAPACITY; i++)
         table[i] = new NgramTree();
 }
@@ -66,8 +67,8 @@ string HashTable::searchInText(string &text)
     string currWord = "";
     string result = "";
     const SuffixList *suffixes;
-    set<const string *> foundStrings;
     size_t i = 0;
+    FoundSet foundSuffixes(1000);
 
     while (i <= text.length()) {
         if (text[i] == ' ' || i == text.length()) {
@@ -75,7 +76,7 @@ string HashTable::searchInText(string &text)
             if (suffixes) {
                 SuffixNode *suffix = suffixes->getHead();
                 while (suffix) {
-                    if (foundStrings.find(&(suffix->str)) != foundStrings.end()) {
+                    if (suffix->isFound) {
                         suffix = suffix->next;
                         continue;
                     }
@@ -90,7 +91,8 @@ string HashTable::searchInText(string &text)
                     if (text[i + j] != ' ' && (i + j) != text.length())
                         flag = false;
                     if (flag) {
-                        foundStrings.insert(&(suffix->str));
+                        suffix->isFound = true;
+                        foundSuffixes.add(suffix);
                         result += currWord + (suffix->str) + "|";
                     }
                     suffix = suffix->next;
@@ -102,6 +104,12 @@ string HashTable::searchInText(string &text)
         currWord += text[i++];
     }
 
+    uint32_t s = 0;
+    while (s < foundSuffixes.current) {
+        foundSuffixes.set[s]->isFound = false;
+        s++;
+    }
+
     if (result != "")
         result.pop_back();
     else
@@ -109,3 +117,35 @@ string HashTable::searchInText(string &text)
     return result;
 }
 
+
+FoundSet::FoundSet(uint32_t capacity)
+    : capacity(capacity),
+      current(0)
+{
+    set = new SuffixNode *[capacity];
+}
+
+void FoundSet::add(SuffixNode *ptr)
+{
+    if (current < capacity)
+        set[current] = ptr;
+    else {
+        SuffixNode **newSet = (SuffixNode **) realloc(set, 2 * capacity * sizeof(SuffixNode *));
+        set = newSet;
+        capacity *= 2;
+    }
+    current++;
+}
+
+/*
+bool FoundSet::contains(const string *ptr)
+{
+    uint32_t i = 0;
+    while (i < current) {
+        if (set[i] == ptr)
+            return true;
+        i++;
+    }
+    return false;
+}
+*/

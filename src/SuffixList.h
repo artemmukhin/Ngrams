@@ -6,6 +6,7 @@ struct SuffixNode
 {
     string str;
     SuffixNode *next;
+    bool isFound = false; // only for search
 };
 
 class SuffixList

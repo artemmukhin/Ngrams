@@ -1,6 +1,5 @@
 #include <iostream>
 #include <string>
-#include <algorithm>
 #include "SuffixList.h"
 using namespace std;
 
