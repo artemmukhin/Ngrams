@@ -1,39 +1,53 @@
 #include "Node.h"
 
 Node::Node(string val)
-{
-    this->prefix = val;
-    this->left = nullptr;
-    this->right = nullptr;
-}
+    :
+    prefix(val),
+    left(nullptr),
+    right(nullptr),
+    suffixes()
+{}
 
 Node::Node(string val, Node *left, Node *right)
-{
-    this->prefix = val;
-    this->left = left;
-    this->right = right;
-}
+    :
+    prefix(val),
+    left(left),
+    right(right),
+    suffixes()
+{}
 
 void Node::print() const
 {
     cout << prefix << ":" << endl;
-    for (auto it = suffixes.begin(); it != suffixes.end(); it++)
-        cout << "    " << *it << endl;
+    SuffixNode *node = suffixes.getHead();
+    while (node) {
+        cout << "    " << node->str << endl;
+        node = node->next;
+    }
 }
 
+/*
 inline bool stringCompare(const string &left, const string &right)
 {
     return left.size() < right.size();
 }
+*/
 
-void Node::addSuffix(string suff)
+void Node::addSuffix(string &suff)
 {
-    auto insertIt = std::lower_bound(suffixes.begin(), suffixes.end(), suff, stringCompare);
-    suffixes.insert(insertIt, suff);
+    SuffixNode *node = suffixes.getHead();
+    SuffixNode *prev = nullptr;
+    while (node && node->str.size() <= suff.size()) {
+        // exit, if suff already exists
+        if (node->str == suff)
+            return;
+        prev = node;
+        node = node->next;
+    }
+    suffixes.insert(prev, suff);
 }
 
-void Node::removeSuffix(string suff)
+void Node::removeSuffix(string &suff)
 {
-    auto findIt = find(suffixes.begin(), suffixes.end(), suff);
-    suffixes.erase(findIt);
+    suffixes.remove(suff);
 }

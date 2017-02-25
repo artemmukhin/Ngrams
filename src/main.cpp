@@ -1,15 +1,12 @@
 #include <iostream>
 #include <sstream>
-#include <cstdio>
-#include "NgramTree.h"
-
-#define NUM_THREADS 4
+#include "HashTable.h"
 
 using namespace std;
 
 int main()
 {
-    NgramTree ngrams;
+    HashTable ngrams;
 
     string query = "";
     getline(cin, query);
@@ -17,26 +14,19 @@ int main()
         ngrams.add(query);
         getline(cin, query);
     }
-    puts("R\n");
+    puts("R");
 
     query = "";
-    std::stringstream buffer;
 
     while (std::getline(std::cin, query)) {
         if (query == "F") {
-            puts(buffer.str().c_str());
             fflush(stdout);
-            buffer.str(std::string());
-            buffer.clear();
             continue;
         }
-        string prefix;
-        string suffix;
-        size_t j;
         switch (query[0]) {
             case 'Q':
                 query.erase(0, 2);
-                buffer << ngrams.searchInText(query) << endl << std::flush;
+                puts(ngrams.searchInText(query).c_str());
                 break;
 
             case 'A':
@@ -46,21 +36,12 @@ int main()
 
             case 'D':
                 query.erase(0, 2);
-                prefix = "";
-                suffix = "";
-                for (j = 0; j < query.length() && query[j] != ' '; j++);
-                prefix = query.substr(0, j);
-                suffix = query.substr(j, query.length());
-                ngrams.remove(prefix, suffix);
+                ngrams.remove(query);
                 break;
             default:
                 std::cerr << "Error unrecognized line: \"" << query << "\"" << std::endl;
                 return 1;
         }
-
-        //cout << endl;
-        //ngrams.print();
-        //cout << endl;
     }
 
     return 0;

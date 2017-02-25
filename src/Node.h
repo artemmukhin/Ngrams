@@ -1,16 +1,17 @@
 #include <iostream>
 #include <string>
-#include <list>
 #include <algorithm>
+#include "SuffixList.h"
 using namespace std;
 
 class Node
 {
     friend class NgramTree;
+    friend class HashTable;
 
 private:
     string prefix;
-    list<string> suffixes;
+    SuffixList suffixes;
 
     Node *left;
     Node *right;
@@ -22,7 +23,8 @@ public:
 
     void print() const;
 
-    void addSuffix(string suff);
+    void addSuffix(string &suff);
 
-    void removeSuffix(string suff);
+    void removeSuffix(string &suff);
 };
+

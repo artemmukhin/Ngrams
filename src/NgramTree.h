@@ -24,25 +24,30 @@ prefix="earth",suffixes=["a b c"]--------|
 
 class NgramTree
 {
+    friend class HashTable;
 private:
     Node *root;
 
-    void addHelper(Node *start, string prefix, string suffix);
+    void addHelper(Node *start, string &prefix, string &suffix);
 
     void printHelper(Node *start);
 
-    bool removeHelper(Node *parent, Node *current, string prefix, string suffix);
+    bool removeHelper(Node *parent, Node *current, string &prefix, string &suffix);
 
 public:
     NgramTree();
 
-    void add(string val);
-
     void print();
 
-    bool remove(string prefix, string suffix);
+    // void add(string &val);
 
-    const list<string> *suffixesOf(string prefix) const;
+    void add(string &prefix, string &suffix);
 
-    string searchInText(string text);
+    // bool remove(string &val);
+
+    bool remove(string &prefix, string &suffix);
+
+    //const SuffixList *suffixesOf(string prefix) const;
+
+    //string &searchInText(string text);
 };
