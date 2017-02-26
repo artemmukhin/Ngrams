@@ -20,8 +20,6 @@ public:
 
     Node(string val, Node *left, Node *right);
 
-    void print() const;
-
     void addSuffix(string &suff);
 
     void removeSuffix(string &suff);

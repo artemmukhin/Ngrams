@@ -54,6 +54,7 @@ const SuffixList *HashTable::suffixesOf(string &prefix) const
     while (current) {
         if (current->prefix == prefix)
             return &current->suffixes;
+
         if (current->prefix > prefix)
             current = current->left;
         else
@@ -117,7 +118,6 @@ string HashTable::searchInText(string &text)
     return result;
 }
 
-
 FoundSet::FoundSet(uint32_t capacity)
     : capacity(capacity),
       current(0)
@@ -136,16 +136,3 @@ void FoundSet::add(SuffixNode *ptr)
     }
     current++;
 }
-
-/*
-bool FoundSet::contains(const string *ptr)
-{
-    uint32_t i = 0;
-    while (i < current) {
-        if (set[i] == ptr)
-            return true;
-        i++;
-    }
-    return false;
-}
-*/

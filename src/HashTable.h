@@ -1,6 +1,8 @@
+#pragma once
+
 #include "NgramTree.h"
 #include <cstdint>
-#define CAPACITY 10000
+#define CAPACITY 10267
 
 class HashTable
 {
@@ -34,6 +36,4 @@ public:
     FoundSet(uint32_t capacity);
 
     void add(SuffixNode *ptr);
-
-    // bool contains(const string *);
 };

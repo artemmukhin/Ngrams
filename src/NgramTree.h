@@ -28,24 +28,13 @@ private:
 
     void addHelper(Node *start, string &prefix, string &suffix);
 
-    void printHelper(Node *start);
-
     bool removeHelper(Node *parent, Node *current, string &prefix, string &suffix);
 
 public:
     NgramTree();
 
-    void print();
-
-    // void add(string &val);
-
     void add(string &prefix, string &suffix);
-
-    // bool remove(string &val);
 
     bool remove(string &prefix, string &suffix);
 
-    //const SuffixList *suffixesOf(string prefix) const;
-
-    //string &searchInText(string text);
 };
