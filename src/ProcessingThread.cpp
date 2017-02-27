@@ -7,33 +7,6 @@
 ProcessingThread::ProcessingThread(){
     state = FREE;
     pthread_create(&thread, NULL, routine, (void*)this);
-    pthread_mutex_unlock(&queue_state);
-    isEmpty = true;
-}
-
-void ProcessingThread::add(string &str){
-    //pthread_mutex_lock(&queue_state);
-    query.push({1, str});
-    //pthread_mutex_unlock(&queue_state);
-    isEmpty = false;
-}
-
-void ProcessingThread::remove(string &str) {
-   // pthread_mutex_lock(&queue_state);
-    query.push({-1, str});
-    //pthread_mutex_unlock(&queue_state);
-    isEmpty = false;
-}
-
-void ProcessingThread::process(string &text, int num){
-   // pthread_mutex_lock(&queue_state);
-    query.push({0, text});
-   // pthread_mutex_unlock(&queue_state);
-    isEmpty = false;
-}
-
-ThreadState ProcessingThread::getState(){
-    return state;
 }
 
 int ProcessingThread::getNum(){
@@ -42,6 +15,7 @@ int ProcessingThread::getNum(){
 
 void ProcessingThread::printResult(){
     puts(result.c_str());
+    //fflush(stdout)
     state = ThreadState::FREE;
 }
 
@@ -50,34 +24,26 @@ void ProcessingThread::printResult(){
 void* ProcessingThread::routine(void* data){
     ProcessingThread *state = (ProcessingThread*)data;
 
-    cout << "Started thread " << state->thread << endl;
+    //cout << "Started thread " << state->thread << endl;
 
     while(1){
-        if(!state->isEmpty)
-        if(pthread_mutex_lock(&state->queue_state)) {
-           if (!state->query.empty()) {
-               Query query = state->query.front();
-               state->query.pop();
-               if(state->query.empty())state->isEmpty = true;
-               pthread_mutex_unlock(&state->queue_state);
+        Query query = state->pipe.next();
 
-               if(query.type == 1) {
-                   state->ngrams.add(query.str);
-                   continue;
-               }
+        //cout << "Thread " << state->thread << ". Processing \"{"  << query.type << " " << query.str << "}\"\n";
 
-               if(query.type == -1) {
-                   state->ngrams.remove(query.str);
-                   continue;
-               }
+        if(query.type == 1) {
+            state->ngrams.add(query.str);
+            continue;
+        }
 
-               state->result = state->ngrams.searchInText(query.str);
-               state->state = ThreadState::OUT;
+        if(query.type == -1) {
+            state->ngrams.remove(query.str);
+            continue;
+        }
 
-           } else {
-               pthread_mutex_unlock(&state->queue_state);
-           }
-       }
+        state->result = state->ngrams.searchInText(query.str);
+        state->state = ThreadState::OUT;
+
     }
 }
 #pragma clang diagnostic pop

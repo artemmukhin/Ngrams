@@ -9,25 +9,20 @@
 #include <queue>
 
 #include "HashTable.h"
-
-struct Query{
-    int type; // -1 remove; 0 - query; 1 - add
-    string str;
-};
+#include "DataPipe.h"
 
 enum ThreadState{
     FREE, OUT, HOLD
 };
 
+
 class ProcessingThread {
 
     HashTable ngrams;
-    queue<Query> query;
 
     pthread_t thread;
-    ThreadState state;
-    volatile bool isEmpty;
 
+    ThreadState state;
     string result;
     int num;
 
@@ -35,14 +30,10 @@ class ProcessingThread {
 
 public:
 
-    pthread_mutex_t queue_state;
+    DataPipe pipe;
+
     ProcessingThread();
 
-    void add(string &str);
-    void remove(string &str);
-    void process(string &text, int num);
-
-    ThreadState getState();
     int getNum();
     void printResult();
 

@@ -7,12 +7,13 @@
 
 #include "ProcessingThread.h"
 
-#define THREAD_NUM 4
+#define THREAD_NUM 40
 
 class Solver {
 
     ProcessingThread thread[THREAD_NUM];
     int waitOut;
+    int total;
 
 public:
     Solver();
@@ -20,6 +21,7 @@ public:
     void remove(string &str);
     void process(string &text, int num);
 
+    void flush();
     void wait();
 };
 

@@ -17,7 +17,7 @@ int main()
         getline(cin, query);
     }
 
-    //solver.wait();
+    solver.wait();
 
     puts("R");
 
@@ -26,6 +26,7 @@ int main()
 
     while (std::getline(std::cin, query)) {
         if (query == "F") {
+            solver.flush();
             fflush(stdout);
             continue;
         }
