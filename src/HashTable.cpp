@@ -66,7 +66,7 @@ const SuffixList *HashTable::suffixesOf(string &prefix) const
     return nullptr;
 }
 
-string HashTable::searchInText(const char *str, int length)
+string* HashTable::searchInText(const char *str, int length)
 {
     const uint64_t MAX_LEN = 1000000;
     const int P = 239017;
@@ -81,7 +81,7 @@ string HashTable::searchInText(const char *str, int length)
     }
 
     string currWord = "";
-    string result = "";
+    string* result = new string();
     const SuffixList *suffixes;
     size_t i = 0;
     FoundSet foundSuffixes(10000);
@@ -111,7 +111,9 @@ string HashTable::searchInText(const char *str, int length)
                     if (flag) {
                         suffix->isFound = true;
                         foundSuffixes.add(suffix);
-                        result += currWord + (suffix->str) + "|";
+                        result->append(currWord);
+                        result->append(suffix->str);
+                        result->append("|");
                     }
                     suffix = suffix->next;
                 }
@@ -128,10 +130,10 @@ string HashTable::searchInText(const char *str, int length)
         s++;
     }
 
-    if (result != "")
-        result.pop_back();
+    if (!result->empty())
+        result->pop_back();
     else
-        result = "-1";
+        result = new string("-1");
 
     delete[] hashes;
     delete[] powers;

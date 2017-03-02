@@ -5,18 +5,7 @@
 #include "ProcessingThread.h"
 
 ProcessingThread::ProcessingThread(){
-    state = FREE;
     pthread_create(&thread, NULL, routine, (void*)this);
-}
-
-int ProcessingThread::getNum(){
-    return num;
-}
-
-void ProcessingThread::printResult(){
-    puts(result.c_str());
-    //fflush(stdout)
-    state = ThreadState::FREE;
 }
 
 #pragma clang diagnostic push
@@ -41,9 +30,7 @@ void* ProcessingThread::routine(void* data){
             continue;
         }
 
-        state->result = state->ngrams.searchInText(query.str, query.length);
-        state->state = ThreadState::OUT;
-
+        state->result.Push(state->ngrams.searchInText(query.str, query.length));
     }
 }
 #pragma clang diagnostic pop

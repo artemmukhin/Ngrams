@@ -20,7 +20,7 @@ public:
 
     const SuffixList *suffixesOf(string &prefix) const;
 
-    string searchInText(const char *str, int length);
+    string* searchInText(const char *str, int length);
 };
 
 

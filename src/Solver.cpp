@@ -24,15 +24,9 @@ void Solver::remove(const char *str, int length){
 }
 
 void Solver::flush() {
-    while(waitOut != total) {
+    while(waitOut != total)
         for (int i = 0; i < THREAD_NUM; i++)
-            if(thread[i].num == waitOut){
-                while(thread[i].state != ThreadState::OUT);
-                thread[i].printResult();
-                waitOut++;
-            }
-    }
-
+            waitOut += thread[i].result.TryOut(waitOut);
 }
 
 void Solver::wait(){
@@ -49,19 +43,12 @@ void Solver::process(const char *str, int length, int num){
     int i = 0;
     total++;
     while(1) {
-        if (thread[i].state == ThreadState ::OUT)
-            if(thread[i].getNum() == waitOut){
-                waitOut++;
-                thread[i].printResult();
-            }
+        waitOut += thread[i].result.TryOut(waitOut);
 
-            if(thread[i].state == ThreadState::FREE){
-                //scout << "Query given to " << i << " thread" << endl;
-                thread[i].pipe.process(str, length);
-                thread[i].state = ThreadState ::HOLD;
-                thread[i].num = num;
-                break;
-            }
+        if(thread[i].result.isReady(num)){
+            thread[i].pipe.process(str, length);
+            break;
+        }
 
         i = (i+ 1) % THREAD_NUM;
     }

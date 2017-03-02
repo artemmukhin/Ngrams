@@ -10,11 +10,7 @@
 
 #include "HashTable.h"
 #include "DataPipe.h"
-
-enum ThreadState{
-    FREE, OUT, HOLD
-};
-
+#include "ResultPipe.h"
 
 class ProcessingThread {
 
@@ -22,20 +18,14 @@ class ProcessingThread {
 
     pthread_t thread;
 
-    ThreadState state;
-    string result;
-    int num;
-
     static void* routine(void* data);
 
 public:
 
     DataPipe pipe;
+    ResultPipe result;
 
     ProcessingThread();
-
-    int getNum();
-    void printResult();
 
     friend class Solver;
 
