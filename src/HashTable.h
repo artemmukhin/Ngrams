@@ -34,6 +34,7 @@ public:
     uint32_t current;
 
     FoundSet(uint32_t capacity);
+    //~FoundSet();
 
     void add(SuffixNode *ptr);
 };

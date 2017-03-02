@@ -1,8 +1,8 @@
 #include "NgramTree.h"
 
 NgramTree::NgramTree()
-    :
-    root(nullptr)
+        :
+        root(nullptr)
 {}
 
 void NgramTree::addHelper(Node *start, string &prefix, string &suffix)
@@ -51,7 +51,7 @@ bool NgramTree::removeHelper(Node *parent, Node *current, string &prefix, string
     }
 
     return removeHelper(current, current->left, prefix, suffix) ||
-        removeHelper(current, current->right, prefix, suffix);
+           removeHelper(current, current->right, prefix, suffix);
 }
 
 bool NgramTree::remove(string &prefix, string &suffix)

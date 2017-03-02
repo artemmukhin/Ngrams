@@ -65,11 +65,23 @@ const SuffixList *HashTable::suffixesOf(string &prefix) const
 
 string HashTable::searchInText(string &text)
 {
+    const uint64_t MAX_LEN = 1000000;
+    const int P = 239017;
+    uint64_t *hashes = new uint64_t[MAX_LEN + 1];
+    uint64_t *powers = new uint64_t[MAX_LEN + 1];
+
+    powers[0] = 1;
+    hashes[0] = 0;
+    for (size_t i = 0; i < text.size(); i++) {
+        hashes[i + 1] = hashes[i] * P + text[i];
+        powers[i + 1] = powers[i] * P;
+    }
+
     string currWord = "";
     string result = "";
     const SuffixList *suffixes;
     size_t i = 0;
-    FoundSet foundSuffixes(1000);
+    FoundSet foundSuffixes(10000);
 
     while (i <= text.length()) {
         if (text[i] == ' ' || i == text.length()) {
@@ -77,10 +89,12 @@ string HashTable::searchInText(string &text)
             if (suffixes) {
                 SuffixNode *suffix = suffixes->getHead();
                 while (suffix) {
-                    if (suffix->isFound) {
+                    uint64_t textHash = hashes[i + suffix->str.size()] - hashes[i] * powers[suffix->str.size()];
+                    if (suffix->isFound || suffix->hash != textHash) {
                         suffix = suffix->next;
                         continue;
                     }
+
                     bool flag = true;
                     size_t j;
                     for (j = 0; j < suffix->str.length(); j++) {
@@ -115,22 +129,36 @@ string HashTable::searchInText(string &text)
         result.pop_back();
     else
         result = "-1";
+
+    delete[] hashes;
+    delete[] powers;
+
     return result;
 }
 
 FoundSet::FoundSet(uint32_t capacity)
-    : capacity(capacity),
-      current(0)
+        : capacity(capacity),
+          current(0)
 {
     set = new SuffixNode *[capacity];
 }
+
+/*
+FoundSet::~FoundSet()
+{
+    delete[] set;
+}
+*/
 
 void FoundSet::add(SuffixNode *ptr)
 {
     if (current < capacity)
         set[current] = ptr;
     else {
-        SuffixNode **newSet = (SuffixNode **) realloc(set, 2 * capacity * sizeof(SuffixNode *));
+        SuffixNode **newSet = new SuffixNode *[2 * capacity];
+        for (uint32_t i = 0; i < capacity; i++)
+            newSet[i] = set[i];
+        delete[] set;
         set = newSet;
         capacity *= 2;
     }
