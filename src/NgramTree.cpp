@@ -1,8 +1,8 @@
 #include "NgramTree.h"
 
 NgramTree::NgramTree()
-    :
-    root(nullptr)
+        :
+        root(nullptr)
 {}
 
 void NgramTree::addHelper(Node *start, string &prefix, string &suffix)
@@ -89,7 +89,7 @@ bool NgramTree::removeHelper(Node *parent, Node *current, string &prefix, string
     }
 
     return removeHelper(current, current->left, prefix, suffix) ||
-        removeHelper(current, current->right, prefix, suffix);
+           removeHelper(current, current->right, prefix, suffix);
 }
 
 /*
@@ -111,66 +111,3 @@ bool NgramTree::remove(string &prefix, string &suffix)
     return this->removeHelper(nullptr, this->root, prefix, suffix);
 }
 
-/*
-const SuffixList *NgramTree::suffixesOf(string prefix) const
-{
-    Node *current = this->root;
-    while (current) {
-        if (current->prefix == prefix)
-            return &current->suffixes;
-        if (current->prefix > prefix)
-            current = current->left;
-        else
-            current = current->right;
-    }
-    return nullptr;
-}
-
-string &NgramTree::searchInText(string text)
-{
-    string currWord = "";
-    string result = "";
-    const SuffixList *suffixes;
-    set<const string *> foundStrings;
-    size_t i = 0;
-
-    while (i <= text.length()) {
-        if (text[i] == ' ' || i == text.length()) {
-            suffixes = this->suffixesOf(currWord);
-            if (suffixes) {
-                SuffixNode *suffix = suffixes->getHead();
-                while (suffix) {
-                    if (foundStrings.find(&(suffix->str)) != foundStrings.end()) {
-                        suffix = suffix->next;
-                        continue;
-                    }
-                    bool flag = true;
-                    size_t j;
-                    for (j = 0; j < suffix->str.length(); j++) {
-                        if (text[i + j] != suffix->str[j]) {
-                            flag = false;
-                            break;
-                        }
-                    }
-                    if (text[i + j] != ' ' && (i + j) != text.length())
-                        flag = false;
-                    if (flag) {
-                        foundStrings.insert(&(suffix->str));
-                        result += currWord + (suffix->str) + "|";
-                    }
-                    suffix = suffix->next;
-                }
-            }
-            currWord = "";
-            i++;
-        }
-        currWord += text[i++];
-    }
-
-    if (result != "")
-        result.pop_back();
-    else
-        result = "-1";
-    return result;
-}
-*/

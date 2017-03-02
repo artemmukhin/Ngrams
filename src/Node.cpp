@@ -1,19 +1,19 @@
 #include "Node.h"
 
 Node::Node(string val)
-    :
-    prefix(val),
-    left(nullptr),
-    right(nullptr),
-    suffixes()
+        :
+        prefix(val),
+        left(nullptr),
+        right(nullptr),
+        suffixes()
 {}
 
 Node::Node(string val, Node *left, Node *right)
-    :
-    prefix(val),
-    left(left),
-    right(right),
-    suffixes()
+        :
+        prefix(val),
+        left(left),
+        right(right),
+        suffixes()
 {}
 
 void Node::print() const
