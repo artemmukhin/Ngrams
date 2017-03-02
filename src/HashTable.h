@@ -14,13 +14,13 @@ private:
 public:
     HashTable();
 
-    void add(string &val);
+    void add(const char *str, int length);
 
-    void remove(string &val);
+    void remove(const char *str, int length);
 
     const SuffixList *suffixesOf(string &prefix) const;
 
-    string searchInText(string &text);
+    string searchInText(const char *str, int length);
 };
 
 

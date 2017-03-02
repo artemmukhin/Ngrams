@@ -17,9 +17,9 @@ class Solver {
 
 public:
     Solver();
-    void add(string &str);
-    void remove(string &str);
-    void process(string &text, int num);
+    void add(const char *str, int length);
+    void remove(const char *str, int length);
+    void process(const char *text, int length, int num);
 
     void flush();
     void wait();

@@ -18,13 +18,14 @@ uint64_t HashTable::hash(const char *str) const
     return hash % CAPACITY;
 }
 
-void HashTable::add(string &val)
+void HashTable::add(const char *str, int length)
 {
+    string val(str);
     string prefix;
     string suffix;
     size_t i;
 
-    for (i = 0; i < val.length() && val[i] != ' '; i++);
+    for (i = 0; i < length && val[i] != ' '; i++);
     prefix = val.substr(0, i);
     suffix = val.substr(i, val.length());
 
@@ -32,13 +33,15 @@ void HashTable::add(string &val)
     table[key]->add(prefix, suffix);
 }
 
-void HashTable::remove(string &val)
+void HashTable::remove(const char *str, int length)
 {
+    string val(str);
+
     string prefix;
     string suffix;
     size_t i;
 
-    for (i = 0; i < val.length() && val[i] != ' '; i++);
+    for (i = 0; i < length && val[i] != ' '; i++);
     prefix = val.substr(0, i);
     suffix = val.substr(i, val.length());
 
@@ -63,7 +66,7 @@ const SuffixList *HashTable::suffixesOf(string &prefix) const
     return nullptr;
 }
 
-string HashTable::searchInText(string &text)
+string HashTable::searchInText(const char *str, int length)
 {
     const uint64_t MAX_LEN = 1000000;
     const int P = 239017;
@@ -72,8 +75,8 @@ string HashTable::searchInText(string &text)
 
     powers[0] = 1;
     hashes[0] = 0;
-    for (size_t i = 0; i < text.size(); i++) {
-        hashes[i + 1] = hashes[i] * P + text[i];
+    for (size_t i = 0; i < length; i++) {
+        hashes[i + 1] = hashes[i] * P + str[i];
         powers[i + 1] = powers[i] * P;
     }
 
@@ -83,8 +86,8 @@ string HashTable::searchInText(string &text)
     size_t i = 0;
     FoundSet foundSuffixes(10000);
 
-    while (i <= text.length()) {
-        if (text[i] == ' ' || i == text.length()) {
+    while (i <= length){
+        if (str[i] == ' ' || i == length) {
             suffixes = this->suffixesOf(currWord);
             if (suffixes) {
                 SuffixNode *suffix = suffixes->getHead();
@@ -98,12 +101,12 @@ string HashTable::searchInText(string &text)
                     bool flag = true;
                     size_t j;
                     for (j = 0; j < suffix->str.length(); j++) {
-                        if (text[i + j] != suffix->str[j]) {
+                        if (str[i + j] != suffix->str[j]) {
                             flag = false;
                             break;
                         }
                     }
-                    if (text[i + j] != ' ' && (i + j) != text.length())
+                    if (str[i + j] != ' ' && (i + j) != length)
                         flag = false;
                     if (flag) {
                         suffix->isFound = true;
@@ -116,7 +119,7 @@ string HashTable::searchInText(string &text)
             currWord = "";
             i++;
         }
-        currWord += text[i++];
+        currWord += str[i++];
     }
 
     uint32_t s = 0;

@@ -32,16 +32,16 @@ void* ProcessingThread::routine(void* data){
         //cout << "Thread " << state->thread << ". Processing \"{"  << query.type << " " << query.str << "}\"\n";
 
         if(query.type == 1) {
-            state->ngrams.add(query.str);
+            state->ngrams.add(query.str, query.length);
             continue;
         }
 
         if(query.type == -1) {
-            state->ngrams.remove(query.str);
+            state->ngrams.remove(query.str, query.length);
             continue;
         }
 
-        state->result = state->ngrams.searchInText(query.str);
+        state->result = state->ngrams.searchInText(query.str, query.length);
         state->state = ThreadState::OUT;
 
     }

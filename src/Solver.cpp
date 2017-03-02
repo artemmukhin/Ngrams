@@ -12,14 +12,14 @@ Solver::Solver(){
     total = 0;
 }
 
-void Solver::add(string &str){
+void Solver::add(const char *str, int length){
     for(int i = 0; i < THREAD_NUM; i++)
-        thread[i].pipe.add(str);
+        thread[i].pipe.add(str, length);
 }
 
-void Solver::remove(string &str){
+void Solver::remove(const char *str, int length){
     for(int i = 0; i < THREAD_NUM; i++)
-        thread[i].pipe.remove(str);
+        thread[i].pipe.remove(str, length);
 
 }
 
@@ -45,7 +45,7 @@ void Solver::wait(){
     }*/
 }
 
-void Solver::process(string &text, int num){
+void Solver::process(const char *str, int length, int num){
     int i = 0;
     total++;
     while(1) {
@@ -57,12 +57,12 @@ void Solver::process(string &text, int num){
 
             if(thread[i].state == ThreadState::FREE){
                 //scout << "Query given to " << i << " thread" << endl;
-                thread[i].pipe.process(text);
+                thread[i].pipe.process(str, length);
                 thread[i].state = ThreadState ::HOLD;
                 thread[i].num = num;
                 break;
             }
 
-        i++;
+        i = (i+ 1) % THREAD_NUM;
     }
 }

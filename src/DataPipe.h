@@ -10,7 +10,8 @@
 
 struct Query{
     int type; // -1 remove; 0 - query; 1 - add
-    std::string str;
+    int length;
+    const char *str;
 };
 
 class DataPipe {
@@ -26,9 +27,9 @@ public:
 
     Query next();
 
-    void add(std::string &str);
-    void remove(std::string &str);
-    void process(std::string &text);
+    void add(const char *str, int length);
+    void remove(const char *str, int length);
+    void process(const char *str, int length);
 
 };
 

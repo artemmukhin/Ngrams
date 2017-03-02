@@ -13,7 +13,7 @@ int main()
     string query = "";
     getline(cin, query);
     while (query != "S") {
-        solver.add(query);
+        solver.add((new string(query))->c_str(), query.length());
         getline(cin, query);
     }
 
@@ -25,25 +25,26 @@ int main()
     int num = 0;
 
     while (std::getline(std::cin, query)) {
+
         if (query == "F") {
             solver.flush();
             fflush(stdout);
             continue;
         }
+
+        string *query_buf = new string(query);
+
         switch (query[0]) {
             case 'Q':
-                query.erase(0, 2);
-                solver.process(query, num++);
+                solver.process(&query_buf->c_str()[2], query.length() - 2, num++);
                 break;
 
             case 'A':
-                query.erase(0, 2);
-                solver.add(query);
+                solver.add(&query_buf->c_str()[2], query.length() - 2);
                 break;
 
             case 'D':
-                query.erase(0, 2);
-                solver.remove(query);
+                solver.remove(&query_buf->c_str()[2], query.length() - 2);
                 break;
             default:
                 std::cerr << "Error unrecognized line: \"" << query << "\"" << std::endl;

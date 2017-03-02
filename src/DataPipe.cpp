@@ -28,23 +28,23 @@ Query DataPipe::next() {
     return res;
 }
 
-void DataPipe::add(std::string &str){
+void DataPipe::add(const char *str, int length){
     pthread_mutex_lock(&queue_mutex);
-    wait->push({1, str});
+    wait->push({1, length, str});
     pthread_cond_signal(&queue_state);
     pthread_mutex_unlock(&queue_mutex);
 }
 
-void DataPipe::remove(std::string &str){
+void DataPipe::remove(const char *str, int length){
     pthread_mutex_lock(&queue_mutex);
-    wait->push({-1, str});
+    wait->push({-1, length, str});
     pthread_cond_signal(&queue_state);
     pthread_mutex_unlock(&queue_mutex);
 }
 
-void DataPipe::process(std::string &text){
+void DataPipe::process(const char *str, int length){
     pthread_mutex_lock(&queue_mutex);
-    wait->push({0, text});
+    wait->push({0, length, str});
     pthread_cond_signal(&queue_state);
     pthread_mutex_unlock(&queue_mutex);
 }
