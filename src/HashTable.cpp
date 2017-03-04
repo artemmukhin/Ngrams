@@ -7,58 +7,59 @@ HashTable::HashTable()
         table[i] = new NgramTree();
 }
 
-uint64_t HashTable::hash(const char *str) const
+uint64_t HashTable::hash(const char *str, uint64_t length) const
 {
-    uint64_t hash = 5381;
-    int c;
-
-    while (c = *str++)
-        hash = ((hash << 5) + hash) + c; /* hash * 33 + c */
-
-    return hash % CAPACITY;
+    return hashOfString(str, length) % CAPACITY;
 }
 
-void HashTable::add(const char *str, int length)
+void HashTable::add(const char *str, uint64_t length)
 {
-    string val(str);
-    string prefix;
-    string suffix;
-    size_t i;
+    const char *prefixStr = str;
+    const char *suffixStr;
+    uint64_t prefixSize = 0;
+    while (*prefixStr++ != ' ' && prefixSize++ != length)
+        ;
+    suffixStr = prefixStr;
+    prefixStr--;
 
-    for (i = 0; i < length && val[i] != ' '; i++);
-    prefix = val.substr(0, i);
-    suffix = val.substr(i, val.length());
+    uint64_t hashPrefix = hashOfString(prefixStr, prefixSize);
+    uint64_t hashSuffix = hashOfString(suffixStr, length - prefixSize);
+    HString prefix = {prefixStr, prefixSize, hashPrefix};
+    HString suffix = {suffixStr, length - prefixSize, hashSuffix};
 
-    uint64_t key = hash(prefix.c_str());
-    table[key]->add(prefix, suffix);
+    table[prefix.hash]->add(prefix, suffix);
 }
 
-void HashTable::remove(const char *str, int length)
+void HashTable::remove(const char *str, uint64_t length)
 {
-    string val(str);
+    const char *prefixStr = str;
+    const char *suffixStr;
+    uint64_t prefixSize = 0;
+    while (*prefixStr++ != ' ' && prefixSize++ != length)
+        ;
+    suffixStr = prefixStr;
+    prefixStr--;
 
-    string prefix;
-    string suffix;
-    size_t i;
+    uint64_t hashPrefix = hashOfString(prefixStr, prefixSize);
+    uint64_t hashSuffix = hashOfString(suffixStr, length - prefixSize);
+    HString prefix = {prefixStr, prefixSize, hashPrefix};
+    HString suffix = {suffixStr, length - prefixSize, hashSuffix};
 
-    for (i = 0; i < length && val[i] != ' '; i++);
-    prefix = val.substr(0, i);
-    suffix = val.substr(i, val.length());
-
-    uint64_t key = hash(prefix.c_str());
-    table[key]->remove(prefix, suffix);
+    table[prefix.hash]->remove(prefix, suffix);
 }
 
-const SuffixList *HashTable::suffixesOf(string &prefix) const
+const SuffixList *HashTable::suffixesOf(const HString prefix) const
 {
-    uint64_t key = hash(prefix.c_str());
-
-    Node *current = table[key]->root;
+    Node *current = table[prefix.hash]->root;
     while (current) {
-        if (current->prefix == prefix)
-            return &current->suffixes;
+        if (current->prefix.hash == prefix.hash) {
+            if (strcmp(current->prefix.str, prefix.str) == 0)
+                return &current->suffixes;
+        }
 
-        if (current->prefix > prefix)
+        // можно сравнивать в дереве не по строке, а по хешу...
+
+        if (strcmp(current->prefix.str, prefix.str) > 0)
             current = current->left;
         else
             current = current->right;
@@ -66,42 +67,36 @@ const SuffixList *HashTable::suffixesOf(string &prefix) const
     return nullptr;
 }
 
-string* HashTable::searchInText(const char *str, int length)
+string *HashTable::searchInText(const char *str, uint64_t length)
 {
-    const uint64_t MAX_LEN = 1000000;
-    const int P = 239017;
     uint64_t *hashes = new uint64_t[MAX_LEN + 1];
-    uint64_t *powers = new uint64_t[MAX_LEN + 1];
-
-    powers[0] = 1;
-    hashes[0] = 0;
-    for (size_t i = 0; i < length; i++) {
-        hashes[i + 1] = hashes[i] * P + str[i];
-        powers[i + 1] = powers[i] * P;
-    }
+    hashesOfPrefixes(str, length, hashes);
 
     string currWord = "";
-    string* result = new string();
+    string *result = new string();
     const SuffixList *suffixes;
     size_t i = 0;
     FoundSet foundSuffixes(10000);
 
-    while (i <= length){
+    while (i <= length) {
         if (str[i] == ' ' || i == length) {
-            suffixes = this->suffixesOf(currWord);
+            suffixes = this->suffixesOf({currWord.c_str(), currWord.length(),
+                                         hashOfString(currWord.c_str(), currWord.length())
+                                        });
             if (suffixes) {
-                SuffixNode *suffix = suffixes->getHead();
-                while (suffix) {
-                    uint64_t textHash = hashes[i + suffix->str.size()] - hashes[i] * powers[suffix->str.size()];
-                    if (suffix->isFound || suffix->hash != textHash) {
-                        suffix = suffix->next;
+                SuffixNode *suffixNode = suffixes->getHead();
+                while (suffixNode) {
+                    uint64_t textHash = hashes[i + suffixNode->suffix.length] -
+                                        hashes[i] * POWERS[suffixNode->suffix.length];
+                    if (suffixNode->isFound || suffixNode->suffix.hash != textHash) {
+                        suffixNode = suffixNode->next;
                         continue;
                     }
 
                     bool flag = true;
                     size_t j;
-                    for (j = 0; j < suffix->str.length(); j++) {
-                        if (str[i + j] != suffix->str[j]) {
+                    for (j = 0; j < suffixNode->suffix.length; j++) {
+                        if (str[i + j] != suffixNode->suffix.str[j]) {
                             flag = false;
                             break;
                         }
@@ -109,13 +104,13 @@ string* HashTable::searchInText(const char *str, int length)
                     if (str[i + j] != ' ' && (i + j) != length)
                         flag = false;
                     if (flag) {
-                        suffix->isFound = true;
-                        foundSuffixes.add(suffix);
+                        suffixNode->isFound = true;
+                        foundSuffixes.add(suffixNode);
                         result->append(currWord);
-                        result->append(suffix->str);
+                        result->append(suffixNode->suffix.str);
                         result->append("|");
                     }
-                    suffix = suffix->next;
+                    suffixNode = suffixNode->next;
                 }
             }
             currWord = "";
@@ -136,14 +131,13 @@ string* HashTable::searchInText(const char *str, int length)
         result = new string("-1");
 
     delete[] hashes;
-    delete[] powers;
 
     return result;
 }
 
 FoundSet::FoundSet(uint32_t capacity)
-        : capacity(capacity),
-          current(0)
+    : capacity(capacity),
+      current(0)
 {
     set = new SuffixNode *[capacity];
 }

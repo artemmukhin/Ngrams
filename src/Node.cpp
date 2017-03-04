@@ -1,36 +1,38 @@
 #include "Node.h"
 
-Node::Node(string val)
-        :
-        prefix(val),
-        left(nullptr),
-        right(nullptr),
-        suffixes()
+Node::Node(const HString prefix)
+    :
+    prefix(prefix),
+    left(nullptr),
+    right(nullptr),
+    suffixes()
 {}
 
-Node::Node(string val, Node *left, Node *right)
-        :
-        prefix(val),
-        left(left),
-        right(right),
-        suffixes()
+Node::Node(const HString prefix, Node *left, Node *right)
+    :
+    prefix(prefix),
+    left(left),
+    right(right),
+    suffixes()
 {}
 
-void Node::addSuffix(string &suff)
+void Node::addSuffix(const HString suffix)
 {
     SuffixNode *node = suffixes.getHead();
     SuffixNode *prev = nullptr;
-    while (node && node->str.size() <= suff.size()) {
+    while (node && node->suffix.length <= suffix.length) {
         // exit, if suff already exists
-        if (node->str == suff)
-            return;
+        if (node->suffix.hash == suffix.hash) {
+            if (strcmp(node->suffix.str, suffix.str) == 0)
+                return;
+        }
         prev = node;
         node = node->next;
     }
-    suffixes.insert(prev, suff);
+    suffixes.insert(prev, suffix);
 }
 
-void Node::removeSuffix(string &suff)
+void Node::removeSuffix(const HString suffix)
 {
-    suffixes.remove(suff);
+    suffixes.remove(suffix);
 }

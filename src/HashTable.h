@@ -9,20 +9,19 @@ class HashTable
 private:
     NgramTree **table;
 
-    uint64_t hash(const char *str) const;
+    uint64_t hash(const char *str, uint64_t length) const;
 
 public:
     HashTable();
 
-    void add(const char *str, int length);
+    void add(const char *str, uint64_t length);
 
-    void remove(const char *str, int length);
+    void remove(const char *str, uint64_t length);
 
-    const SuffixList *suffixesOf(string &prefix) const;
+    const SuffixList *suffixesOf(const HString prefix) const;
 
-    string* searchInText(const char *str, int length);
+    string *searchInText(const char *str, uint64_t length);
 };
-
 
 class FoundSet
 {

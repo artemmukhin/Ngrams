@@ -1,17 +1,17 @@
 #include "NgramTree.h"
 
 NgramTree::NgramTree()
-        :
-        root(nullptr)
+    :
+    root(nullptr)
 {}
 
-void NgramTree::addHelper(Node *start, string &prefix, string &suffix)
+void NgramTree::addHelper(Node *start, const HString prefix, const HString suffix)
 {
-    if (start->prefix == prefix) {
+    if (start->prefix.hash == prefix.hash) {
+        if (strcmp(start->prefix.str, prefix.str) == 0)
         start->addSuffix(suffix);
     }
-
-    else if (start->prefix.compare(prefix) > 0) {
+    else if (start->prefix.str > prefix.str) {
         if (!start->left) {
             start->left = new Node(prefix);
             start->left->addSuffix(suffix);
@@ -29,10 +29,10 @@ void NgramTree::addHelper(Node *start, string &prefix, string &suffix)
     }
 }
 
-void NgramTree::add(string &prefix, string &suffix)
+void NgramTree::add(const HString prefix, const HString suffix)
 {
     if (root) {
-        this->addHelper(root, prefix, suffix);
+        addHelper(root, prefix, suffix);
     }
     else {
         root = new Node(prefix);
@@ -40,21 +40,23 @@ void NgramTree::add(string &prefix, string &suffix)
     }
 }
 
-bool NgramTree::removeHelper(Node *parent, Node *current, string &prefix, string &suffix)
+bool NgramTree::removeHelper(Node *parent, Node *current, const HString prefix, const HString suffix)
 {
- if (!current)
+    if (!current)
         return false;
 
-    if (current->prefix == prefix) {
-        current->removeSuffix(suffix);
-        return true;
+    if (current->prefix.hash == prefix.hash) {
+        if (strcmp(current->prefix.str, prefix.str) == 0) {
+            current->removeSuffix(suffix);
+            return true;
+        }
     }
 
     return removeHelper(current, current->left, prefix, suffix) ||
-           removeHelper(current, current->right, prefix, suffix);
+        removeHelper(current, current->right, prefix, suffix);
 }
 
-bool NgramTree::remove(string &prefix, string &suffix)
+bool NgramTree::remove(const HString prefix, const HString suffix)
 {
     return this->removeHelper(nullptr, this->root, prefix, suffix);
 }
