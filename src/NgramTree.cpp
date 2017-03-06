@@ -8,10 +8,10 @@ NgramTree::NgramTree()
 void NgramTree::addHelper(Node *start, const HString prefix, const HString suffix)
 {
     if (start->prefix.hash == prefix.hash) {
-        if (strcmp(start->prefix.str, prefix.str) == 0)
+        //if (strcmp(start->prefix.str, prefix.str) == 0)
         start->addSuffix(suffix);
     }
-    else if (start->prefix.str > prefix.str) {
+    else if (start->prefix.hash > prefix.hash) {
         if (!start->left) {
             start->left = new Node(prefix);
             start->left->addSuffix(suffix);
@@ -46,10 +46,9 @@ bool NgramTree::removeHelper(Node *parent, Node *current, const HString prefix, 
         return false;
 
     if (current->prefix.hash == prefix.hash) {
-        if (strcmp(current->prefix.str, prefix.str) == 0) {
+        //if (strcmp(current->prefix.str, prefix.str) == 0)
             current->removeSuffix(suffix);
             return true;
-        }
     }
 
     return removeHelper(current, current->left, prefix, suffix) ||

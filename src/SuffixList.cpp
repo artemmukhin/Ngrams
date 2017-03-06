@@ -40,7 +40,7 @@ void SuffixList::remove(const HString suffix)
     SuffixNode *prev = nullptr;
     while (node) {
         if (node->suffix.hash == suffix.hash) {
-            if (strcmp(node->suffix.str, suffix.str) == 0)
+            //if (strcmp(node->suffix.str, suffix.str) == 0)
                 break;
         }
         prev = node;

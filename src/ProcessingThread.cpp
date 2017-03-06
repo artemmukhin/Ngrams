@@ -1,7 +1,3 @@
-//
-// Created by opot on 26.02.17.
-//
-
 #include "ProcessingThread.h"
 
 ProcessingThread::ProcessingThread()

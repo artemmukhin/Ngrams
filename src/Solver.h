@@ -2,7 +2,7 @@
 
 #include "ProcessingThread.h"
 
-#define THREAD_NUM 1
+#define THREAD_NUM 2
 
 class Solver
 {

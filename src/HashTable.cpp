@@ -22,7 +22,6 @@ void HashTable::add(const char *str, uint64_t length)
         suffixStr++;
         prefixSize++;
     }
-    suffixStr++;
 
     uint64_t hashPrefix = HashEngine::hashOfString(str, prefixSize);
     uint64_t hashSuffix = HashEngine::hashOfString(suffixStr, length - prefixSize);
@@ -56,13 +55,12 @@ const SuffixList *HashTable::suffixesOf(const HString prefix) const
     Node *current = table[prefix.hash % CAPACITY]->root;
     while (current) {
         if (current->prefix.hash == prefix.hash) {
-            if (strcmp(current->prefix.str, prefix.str) == 0)
+        //    if (strcmp(current->prefix.str, prefix.str) == 0)
                 return &current->suffixes;
         }
 
-        // можно сравнивать в дереве не по строке, а по хешу...
-
-        if (strcmp(current->prefix.str, prefix.str) > 0)
+        //if (strcmp(current->prefix.str, prefix.str) > 0)
+        if (current->prefix.hash > prefix.hash)
             current = current->left;
         else
             current = current->right;
@@ -79,18 +77,21 @@ string *HashTable::searchInText(const char *str, uint64_t length)
     string *result = new string();
     const SuffixList *suffixes;
     size_t i = 0;
-    FoundSet foundSuffixes(100);
+    FoundSet foundSuffixes(HashEngine::FOUND_SET_SIZE);
 
     while (i <= length) {
         if (str[i] == ' ' || i == length) {
             suffixes = this->suffixesOf({currWord.c_str(), currWord.length(),
                                          HashEngine::hashOfString(currWord.c_str(), currWord.length())
                                         });
+
             if (suffixes) {
                 SuffixNode *suffixNode = suffixes->getHead();
                 while (suffixNode) {
                     uint64_t textHash = hashes[i + suffixNode->suffix.length] -
-                                        hashes[i] * HashEngine::POWERS[suffixNode->suffix.length];
+                        hashes[i] * HashEngine::POWERS[suffixNode->suffix.length];
+
+                    /*
                     if (suffixNode->isFound || suffixNode->suffix.hash != textHash) {
                         suffixNode = suffixNode->next;
                         continue;
@@ -106,12 +107,17 @@ string *HashTable::searchInText(const char *str, uint64_t length)
                     }
                     if (str[i + j] != ' ' && (i + j) != length)
                         flag = false;
+
                     if (flag) {
-                        suffixNode->isFound = true;
-                        foundSuffixes.add(suffixNode);
-                        result->append(currWord);
-                        result->append(suffixNode->suffix.str);
-                        result->append("|");
+                    */
+                    if (!suffixNode->isFound && suffixNode->suffix.hash == textHash) {
+                        if (i + suffixNode->suffix.length == length || str[i + suffixNode->suffix.length] == ' ') {
+                            suffixNode->isFound = true;
+                            foundSuffixes.add(suffixNode);
+                            result->append(currWord);
+                            result->append(suffixNode->suffix.str);
+                            result->append("|");
+                        }
                     }
                     suffixNode = suffixNode->next;
                 }
@@ -122,7 +128,7 @@ string *HashTable::searchInText(const char *str, uint64_t length)
         currWord += str[i++];
     }
 
-    uint32_t s = 0;
+    uint64_t s = 0;
     while (s < foundSuffixes.current) {
         foundSuffixes.set[s]->isFound = false;
         s++;
@@ -138,7 +144,7 @@ string *HashTable::searchInText(const char *str, uint64_t length)
     return result;
 }
 
-FoundSet::FoundSet(uint32_t capacity)
+FoundSet::FoundSet(uint64_t capacity)
     : capacity(capacity),
       current(0)
 {
@@ -158,7 +164,7 @@ void FoundSet::add(SuffixNode *ptr)
         set[current] = ptr;
     else {
         SuffixNode **newSet = new SuffixNode *[2 * capacity];
-        for (uint32_t i = 0; i < capacity; i++)
+        for (uint64_t i = 0; i < capacity; i++)
             newSet[i] = set[i];
         delete[] set;
         set = newSet;

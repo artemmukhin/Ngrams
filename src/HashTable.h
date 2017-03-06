@@ -27,13 +27,13 @@ public:
 class FoundSet
 {
 private:
-    uint32_t capacity;
+    uint64_t capacity;
 
 public:
     SuffixNode **set;
-    uint32_t current;
+    uint64_t current;
 
-    FoundSet(uint32_t capacity);
+    FoundSet(uint64_t capacity);
     //~FoundSet();
 
     void add(SuffixNode *ptr);
