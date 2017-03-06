@@ -1,11 +1,13 @@
+#pragma once
+
 #include <string>
+#include "HashFunctions.h"
 
 using namespace std;
 
 struct SuffixNode
 {
-    string str;
-    uint64_t hash;
+    HString suffix;
     SuffixNode *next;
     bool isFound = false; // only for search
 };
@@ -14,11 +16,11 @@ class SuffixList
 {
 private:
     SuffixNode *head;
-    uint64_t hash(string &s);
+
 public:
     SuffixList();
-    SuffixList(string &newSuffix);
+    SuffixList(const HString suffix);
     SuffixNode *getHead() const;
-    void insert(SuffixNode *node, string &newSuffix);
-    void remove(string &suffix);
+    void insert(SuffixNode *node, const HString suffix);
+    void remove(const HString suffix);
 };

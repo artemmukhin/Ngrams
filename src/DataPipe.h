@@ -1,21 +1,17 @@
-//
-// Created by opot on 27.02.17.
-//
-
-#ifndef NGRAMS_DATAPIPE_H
-#define NGRAMS_DATAPIPE_H
-
+#pragma once
 #include <queue>
 #include <string>
+#include "pthread.h"
 
-struct Query{
+struct Query
+{
     int type; // -1 remove; 0 - query; 1 - add
-    int length;
+    uint64_t length;
     const char *str;
 };
 
-class DataPipe {
-
+class DataPipe
+{
     pthread_mutex_t queue_mutex;
     pthread_cond_t queue_state;
 
@@ -27,11 +23,9 @@ public:
 
     Query next();
 
-    void add(const char *str, int length);
-    void remove(const char *str, int length);
-    void process(const char *str, int length);
+    void add(const char *str, uint64_t length);
 
+    void remove(const char *str, uint64_t length);
+
+    void process(const char *str, uint64_t length);
 };
-
-
-#endif //NGRAMS_DATAPIPE_H

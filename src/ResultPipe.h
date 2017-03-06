@@ -1,34 +1,32 @@
-//
-// Created by opot on 02.03.17.
-//
-
-#ifndef NGRAMS_RESULTPIPE_H
-#define NGRAMS_RESULTPIPE_H
+#pragma once
 
 #include <string>
 #include <queue>
 
-struct Result{
-    std::string* result;
-    int num;
+struct Result
+{
+    std::string *result;
+    uint64_t num;
 };
 
-enum ThreadState{
+enum ThreadState
+{
     FREE, HOLD
 };
 
-class ResultPipe {
+class ResultPipe
+{
 
-std::queue<Result> pipe;
+    std::queue<Result> pipe;
 
 public:
     ThreadState state;
 
     ResultPipe();
-    void Push(std::string* result);
-    bool isReady(int num);
-    bool TryOut(int curr_num);
+
+    void Push(std::string *result);
+
+    bool isReady(uint64_t num);
+
+    bool TryOut(uint64_t curr_num);
 };
-
-
-#endif //NGRAMS_RESULTPIPE_H

@@ -1,29 +1,21 @@
-//
-// Created by opot on 26.02.17.
-//
-
-#ifndef NGRAMS_SOLVER_H
-#define NGRAMS_SOLVER_H
+#pragma once
 
 #include "ProcessingThread.h"
 
-#define THREAD_NUM 40
+#define THREAD_NUM 2
 
-class Solver {
-
+class Solver
+{
     ProcessingThread thread[THREAD_NUM];
-    int waitOut;
-    int total;
+    uint64_t waitOut;
+    uint64_t total;
 
 public:
     Solver();
-    void add(const char *str, int length);
-    void remove(const char *str, int length);
-    void process(const char *text, int length, int num);
+    void add(const char *str, uint64_t length);
+    void remove(const char *str, uint64_t length);
+    void process(const char *text, uint64_t length, uint64_t num);
 
     void flush();
     void wait();
 };
-
-
-#endif //NGRAMS_SOLVER_H

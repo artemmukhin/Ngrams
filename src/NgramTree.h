@@ -1,3 +1,5 @@
+#pragma once
+
 #include <math.h>
 #include <string>
 #include "Node.h"
@@ -26,15 +28,14 @@ class NgramTree
 private:
     Node *root;
 
-    void addHelper(Node *start, string &prefix, string &suffix);
+    void addHelper(Node *start, const HString prefix, const HString suffix);
 
-    bool removeHelper(Node *parent, Node *current, string &prefix, string &suffix);
+    bool removeHelper(Node *parent, Node *current, const HString prefix, const HString suffix);
 
 public:
     NgramTree();
 
-    void add(string &prefix, string &suffix);
+    void add(const HString prefix, const HString suffix);
 
-    bool remove(string &prefix, string &suffix);
-
+    bool remove(const HString prefix, const HString suffix);
 };

@@ -1,9 +1,4 @@
-//
-// Created by opot on 26.02.17.
-//
-
-#ifndef NGRAMS_PROCESSINGTHREAD_H
-#define NGRAMS_PROCESSINGTHREAD_H
+#pragma once
 
 #include <pthread.h>
 #include <queue>
@@ -12,13 +7,13 @@
 #include "DataPipe.h"
 #include "ResultPipe.h"
 
-class ProcessingThread {
-
+class ProcessingThread
+{
     HashTable ngrams;
 
     pthread_t thread;
 
-    static void* routine(void* data);
+    static void *routine(void *data);
 
 public:
 
@@ -30,6 +25,3 @@ public:
     friend class Solver;
 
 };
-
-
-#endif //NGRAMS_PROCESSINGTHREAD_H

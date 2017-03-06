@@ -1,6 +1,9 @@
+#pragma once
+
 #include <iostream>
 #include <string>
 #include "SuffixList.h"
+
 using namespace std;
 
 class Node
@@ -9,19 +12,19 @@ class Node
     friend class HashTable;
 
 private:
-    string prefix;
+    const HString prefix;
     SuffixList suffixes;
 
     Node *left;
     Node *right;
 
 public:
-    Node(string val);
+    Node(const HString prefix);
 
-    Node(string val, Node *left, Node *right);
+    Node(const HString prefix, Node *left, Node *right);
 
-    void addSuffix(string &suff);
+    void addSuffix(const HString suffix);
 
-    void removeSuffix(string &suff);
+    void removeSuffix(const HString suffix);
 };
 
