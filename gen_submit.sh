@@ -1,2 +1,2 @@
 #!/bin/bash
-tar -zcvf submission.tar.gz src compile.sh README run.sh CMakeLists.txt
+tar -zcvf submission.tar.gz src compile.sh README Makefile run.sh CMakeLists.txt
