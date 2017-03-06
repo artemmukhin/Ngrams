@@ -9,7 +9,6 @@
 
 class ProcessingThread
 {
-
     HashTable ngrams;
 
     pthread_t thread;

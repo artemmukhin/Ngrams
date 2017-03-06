@@ -7,9 +7,9 @@ using namespace std;
 
 int main()
 {
-    POWERS[0] = 1;
-    for (uint64_t i = 0; i < MAX_LEN; i++)
-        POWERS[i + 1] = POWERS[i] * P;
+    HashEngine::POWERS[0] = 1;
+    for (uint64_t i = 0; i < HashEngine::MAX_LEN; i++)
+        HashEngine::POWERS[i + 1] = HashEngine::POWERS[i] * HashEngine::P;
 
     Solver solver;
 

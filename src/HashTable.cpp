@@ -1,5 +1,7 @@
 #include "HashTable.h"
 
+const uint64_t HashTable::CAPACITY = 10267;
+
 HashTable::HashTable()
 {
     table = new NgramTree *[CAPACITY];
@@ -9,25 +11,25 @@ HashTable::HashTable()
 
 uint64_t HashTable::hash(const char *str, uint64_t length) const
 {
-    return hashOfString(str, length) % CAPACITY;
+    return HashEngine::hashOfString(str, length) % CAPACITY;
 }
 
 void HashTable::add(const char *str, uint64_t length)
 {
-    const char *prefixStr = str;
-    const char *suffixStr;
+    const char *suffixStr = str;
     uint64_t prefixSize = 0;
-    while (*prefixStr++ != ' ' && prefixSize++ != length)
-        ;
-    suffixStr = prefixStr;
-    prefixStr--;
+    while ( !(*suffixStr == ' ' || prefixSize == length) ) {
+        suffixStr++;
+        prefixSize++;
+    }
+    suffixStr++;
 
-    uint64_t hashPrefix = hashOfString(prefixStr, prefixSize);
-    uint64_t hashSuffix = hashOfString(suffixStr, length - prefixSize);
-    HString prefix = {prefixStr, prefixSize, hashPrefix};
+    uint64_t hashPrefix = HashEngine::hashOfString(str, prefixSize);
+    uint64_t hashSuffix = HashEngine::hashOfString(suffixStr, length - prefixSize);
+    HString prefix = {str, prefixSize, hashPrefix};
     HString suffix = {suffixStr, length - prefixSize, hashSuffix};
 
-    table[prefix.hash]->add(prefix, suffix);
+    table[prefix.hash % CAPACITY]->add(prefix, suffix);
 }
 
 void HashTable::remove(const char *str, uint64_t length)
@@ -38,19 +40,20 @@ void HashTable::remove(const char *str, uint64_t length)
     while (*prefixStr++ != ' ' && prefixSize++ != length)
         ;
     suffixStr = prefixStr;
-    prefixStr--;
+    prefixStr = str;
+    prefixSize--;
 
-    uint64_t hashPrefix = hashOfString(prefixStr, prefixSize);
-    uint64_t hashSuffix = hashOfString(suffixStr, length - prefixSize);
+    uint64_t hashPrefix = HashEngine::hashOfString(prefixStr, prefixSize);
+    uint64_t hashSuffix = HashEngine::hashOfString(suffixStr, length - prefixSize);
     HString prefix = {prefixStr, prefixSize, hashPrefix};
     HString suffix = {suffixStr, length - prefixSize, hashSuffix};
 
-    table[prefix.hash]->remove(prefix, suffix);
+    table[prefix.hash % CAPACITY]->remove(prefix, suffix);
 }
 
 const SuffixList *HashTable::suffixesOf(const HString prefix) const
 {
-    Node *current = table[prefix.hash]->root;
+    Node *current = table[prefix.hash % CAPACITY]->root;
     while (current) {
         if (current->prefix.hash == prefix.hash) {
             if (strcmp(current->prefix.str, prefix.str) == 0)
@@ -69,25 +72,25 @@ const SuffixList *HashTable::suffixesOf(const HString prefix) const
 
 string *HashTable::searchInText(const char *str, uint64_t length)
 {
-    uint64_t *hashes = new uint64_t[MAX_LEN + 1];
-    hashesOfPrefixes(str, length, hashes);
+    uint64_t *hashes = new uint64_t[HashEngine::MAX_LEN + 1];
+    HashEngine::hashesOfPrefixes(str, length, hashes);
 
     string currWord = "";
     string *result = new string();
     const SuffixList *suffixes;
     size_t i = 0;
-    FoundSet foundSuffixes(10000);
+    FoundSet foundSuffixes(100);
 
     while (i <= length) {
         if (str[i] == ' ' || i == length) {
             suffixes = this->suffixesOf({currWord.c_str(), currWord.length(),
-                                         hashOfString(currWord.c_str(), currWord.length())
+                                         HashEngine::hashOfString(currWord.c_str(), currWord.length())
                                         });
             if (suffixes) {
                 SuffixNode *suffixNode = suffixes->getHead();
                 while (suffixNode) {
                     uint64_t textHash = hashes[i + suffixNode->suffix.length] -
-                                        hashes[i] * POWERS[suffixNode->suffix.length];
+                                        hashes[i] * HashEngine::POWERS[suffixNode->suffix.length];
                     if (suffixNode->isFound || suffixNode->suffix.hash != textHash) {
                         suffixNode = suffixNode->next;
                         continue;

@@ -1,11 +1,7 @@
 #pragma once
 
 #include <cstdint>
-
-extern const uint64_t MAX_LEN;
-extern const uint64_t P;
-
-extern uint64_t *POWERS;
+#include <cstring>
 
 
 struct HString
@@ -15,22 +11,36 @@ struct HString
     uint64_t hash;
 };
 
-uint64_t hashOfString(const char *str, uint64_t length)
+class HashEngine
 {
-    uint64_t *hashes = new uint64_t[MAX_LEN + 1];
+private:
+    static uint64_t *staticHashes;
 
-    hashes[0] = 0;
-    for (uint64_t i = 0; i < length; i++)
-        hashes[i + 1] = hashes[i] * P + str[i];
+    HashEngine()
+    {}
+    ~HashEngine()
+    {}
+    HashEngine(HashEngine const &) = delete;
+    HashEngine &operator=(HashEngine const &) = delete;
 
-    return hashes[length - 1];
-}
+public:
+    static const uint64_t MAX_LEN;
+    static const uint64_t P;
+    static uint64_t *POWERS;
 
-void hashesOfPrefixes(const char *str, uint64_t length, uint64_t *hashes)
-{
-    hashes = new uint64_t[MAX_LEN + 1];
+    static uint64_t hashOfString(const char *str, uint64_t length)
+    {
+        staticHashes[0] = 0;
+        for (uint64_t i = 0; i < length; i++)
+            staticHashes[i + 1] = staticHashes[i] * P + str[i];
 
-    hashes[0] = 0;
-    for (uint64_t i = 0; i < length; i++)
-        hashes[i + 1] = hashes[i] * P + str[i];
-}
+        return staticHashes[length];
+    }
+
+    static void hashesOfPrefixes(const char *str, uint64_t length, uint64_t *hashes)
+    {
+        hashes[0] = (uint64_t) *str;
+        for (uint64_t i = 0; i < length; i++)
+            hashes[i + 1] = hashes[i] * P + str[i];
+    }
+};

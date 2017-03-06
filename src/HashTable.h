@@ -2,7 +2,6 @@
 
 #include "NgramTree.h"
 #include <cstdint>
-#define CAPACITY 10267
 
 class HashTable
 {
@@ -12,6 +11,8 @@ private:
     uint64_t hash(const char *str, uint64_t length) const;
 
 public:
+    static const uint64_t CAPACITY;
+
     HashTable();
 
     void add(const char *str, uint64_t length);

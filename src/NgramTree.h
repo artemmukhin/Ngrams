@@ -38,5 +38,4 @@ public:
     void add(const HString prefix, const HString suffix);
 
     bool remove(const HString prefix, const HString suffix);
-
 };

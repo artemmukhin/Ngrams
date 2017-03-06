@@ -34,7 +34,7 @@ void Solver::flush()
 
 void Solver::wait()
 {
-    std::this_thread::sleep_for(std::chrono::milliseconds(5000));
+    std::this_thread::sleep_for(std::chrono::milliseconds(50));
     /*for(int i = 0; count != THREAD_NUM; i++) {
         pthread_mutex_lock(&thread[i].queue_state);
         if(thread[i].query.empty()) count++;
