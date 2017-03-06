@@ -139,7 +139,7 @@ string *HashTable::searchInText(const char *str, uint64_t length)
     else
         result = new string("-1");
 
-    delete[] hashes;
+    //delete[] hashes;
 
     return result;
 }
@@ -162,6 +162,7 @@ void FoundSet::add(SuffixNode *ptr)
 {
     if (current < capacity)
         set[current] = ptr;
+    /*
     else {
         SuffixNode **newSet = new SuffixNode *[2 * capacity];
         for (uint64_t i = 0; i < capacity; i++)
@@ -170,5 +171,6 @@ void FoundSet::add(SuffixNode *ptr)
         set = newSet;
         capacity *= 2;
     }
+    */
     current++;
 }
