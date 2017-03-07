@@ -1,64 +1,47 @@
 #include <iostream>
-#include <pthread.h>
 #include <sstream>
-
-#include "Solver.h"
+#include "HashTable.h"
 
 using namespace std;
 
 int main()
 {
-    Solver solver;
+    HashEngine::POWERS[0] = 1;
+    for (uint64_t i = 0; i < HashEngine::MAX_LEN; i++)
+        HashEngine::POWERS[i + 1] = HashEngine::POWERS[i] * HashEngine::P;
+
+    HashTable ngrams;
 
     string query = "";
     getline(cin, query);
     while (query != "S") {
-        solver.add(query, 0);
+        ngrams.add((new string(query))->c_str(), query.length());
         getline(cin, query);
     }
+    puts("R");
 
-    solver.rebuild();
+    query = "";
 
-    cout << "R" << endl;
-
-    string texts[NUM_THREADS];
-    int text_num[NUM_THREADS];
-    int text_count = 0;
-
-    int num = 0;
     while (std::getline(std::cin, query)) {
-        num++;
         if (query == "F") {
-            solver.solve(texts, text_num, text_count);
-            std::cout.flush();
+            fflush(stdout);
             continue;
         }
-        string prefix;
-        string suffix;
+        string *query_buf = new string(query);
 
         switch (query[0]) {
             case 'Q':
-                query.erase(0, 2);
-                texts[text_count] = query;
-                text_num[text_count] = num;
-                text_count++;
-
-                if(text_count == NUM_THREADS){
-                    solver.solve(texts, text_num, text_count);
-                    text_count = 0;
-                }
-
+                puts((ngrams.searchInText(&query_buf->c_str()[2], query.length() - 2))->c_str());
                 break;
 
             case 'A':
-                query.erase(0, 2);
-                solver.add(query, num);
+                ngrams.add(&query_buf->c_str()[2], query.length() - 2);
                 break;
 
             case 'D':
-                query.erase(0, 2);
-                solver.remove(query, num);
+                ngrams.remove(&query_buf->c_str()[2], query.length() - 2);
                 break;
+
             default:
                 std::cerr << "Error unrecognized line: \"" << query << "\"" << std::endl;
                 return 1;

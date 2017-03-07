@@ -1,9 +1,9 @@
-#include <iostream>
+#pragma once
+
 #include <math.h>
 #include <string>
-#include <vector>
-#include <algorithm>
-#include <set>
+#include "Node.h"
+
 using namespace std;
 
 /*
@@ -21,51 +21,21 @@ prefix="earth",suffixes=["a b c"]--------|
 
 */
 
-struct Suffix{
-
-    struct Action{
-        int num;
-        int action;
-    };
-    string suffix;
-    vector<Action> actions;
-};
-
-class Node
-{
-    friend class NgramTree;
-
-private:
-    string prefix;
-    vector<Suffix> suffixes;
-
-    Node *left;
-    Node *right;
-
-public:
-    Node(string val);
-    Node(string val, Node *left, Node *right);
-
-    void addSuffix(string suff, int num);
-    void removeSuffix(string suff, int num);
-    void clear();
-};
 
 class NgramTree
 {
+    friend class HashTable;
 private:
     Node *root;
 
-    void addHelper(Node *start, string prefix, string suffix, int num);
-    void removeHelper(Node *parent, Node *current, string prefix, string suffix, int num);
+    void addHelper(Node *start, const HString prefix, const HString suffix);
+
+    bool removeHelper(Node *parent, Node *current, const HString prefix, const HString suffix);
 
 public:
     NgramTree();
 
-    void add(string &val, int num);
-    void remove(string &val, int num);
-    void clear();
+    void add(const HString prefix, const HString suffix);
 
-    const vector<Suffix> *suffixesOf(string prefix) const;
-    void searchInText(string &text, vector<string> &result, int num);
+    bool remove(const HString prefix, const HString suffix);
 };
