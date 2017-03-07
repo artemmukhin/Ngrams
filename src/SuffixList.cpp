@@ -39,10 +39,9 @@ void SuffixList::remove(const HString suffix)
     SuffixNode *node = head;
     SuffixNode *prev = nullptr;
     while (node) {
-        if (node->suffix.hash == suffix.hash) {
-            //if (strcmp(node->suffix.str, suffix.str) == 0)
-                break;
-        }
+        if (HashEngine::isEqual(node->suffix, suffix))
+            break;
+
         prev = node;
         node = node->next;
     }

@@ -3,6 +3,8 @@
 #include <cstdint>
 #include <cstring>
 
+#define TIME_TO_WAIT 5000
+#define THREAD_NUM 40
 
 struct HString
 {
@@ -43,5 +45,16 @@ public:
         hashes[0] = (uint64_t) *str;
         for (uint64_t i = 0; i < length; i++)
             hashes[i + 1] = hashes[i] * P + str[i];
+    }
+
+    static bool isEqual(const HString s1, const HString s2) {
+        if (s1.hash != s2.hash)
+            return false;
+        if (s1.length != s2.length)
+            return false;
+        for (uint64_t i = 0; i < s1.length; i++)
+            if (s1.str[i] != s2.str[i])
+                return false;
+        return true;
     }
 };

@@ -1,17 +1,13 @@
 #include "HashTable.h"
 
 const uint64_t HashTable::CAPACITY = 10267;
+//const uint64_t HashTable::CAPACITY = 11;
 
 HashTable::HashTable()
 {
     table = new NgramTree *[CAPACITY];
     for (uint64_t i = 0; i < CAPACITY; i++)
         table[i] = new NgramTree();
-}
-
-uint64_t HashTable::hash(const char *str, uint64_t length) const
-{
-    return HashEngine::hashOfString(str, length) % CAPACITY;
 }
 
 void HashTable::add(const char *str, uint64_t length)
@@ -33,18 +29,16 @@ void HashTable::add(const char *str, uint64_t length)
 
 void HashTable::remove(const char *str, uint64_t length)
 {
-    const char *prefixStr = str;
-    const char *suffixStr;
+    const char *suffixStr = str;
     uint64_t prefixSize = 0;
-    while (*prefixStr++ != ' ' && prefixSize++ != length)
-        ;
-    suffixStr = prefixStr;
-    prefixStr = str;
-    prefixSize--;
+    while ( !(*suffixStr == ' ' || prefixSize == length) ) {
+        suffixStr++;
+        prefixSize++;
+    }
 
-    uint64_t hashPrefix = HashEngine::hashOfString(prefixStr, prefixSize);
+    uint64_t hashPrefix = HashEngine::hashOfString(str, prefixSize);
     uint64_t hashSuffix = HashEngine::hashOfString(suffixStr, length - prefixSize);
-    HString prefix = {prefixStr, prefixSize, hashPrefix};
+    HString prefix = {str, prefixSize, hashPrefix};
     HString suffix = {suffixStr, length - prefixSize, hashSuffix};
 
     table[prefix.hash % CAPACITY]->remove(prefix, suffix);
@@ -54,12 +48,9 @@ const SuffixList *HashTable::suffixesOf(const HString prefix) const
 {
     Node *current = table[prefix.hash % CAPACITY]->root;
     while (current) {
-        if (current->prefix.hash == prefix.hash) {
-        //    if (strcmp(current->prefix.str, prefix.str) == 0)
-                return &current->suffixes;
-        }
+        if (HashEngine::isEqual(current->prefix, prefix))
+            return &current->suffixes;
 
-        //if (strcmp(current->prefix.str, prefix.str) > 0)
         if (current->prefix.hash > prefix.hash)
             current = current->left;
         else
@@ -110,13 +101,16 @@ string *HashTable::searchInText(const char *str, uint64_t length)
 
                     if (flag) {
                     */
-                    if (!suffixNode->isFound && suffixNode->suffix.hash == textHash) {
-                        if (i + suffixNode->suffix.length == length || str[i + suffixNode->suffix.length] == ' ') {
-                            suffixNode->isFound = true;
-                            foundSuffixes.add(suffixNode);
-                            result->append(currWord);
-                            result->append(suffixNode->suffix.str);
-                            result->append("|");
+                    if (!suffixNode->isFound) {
+                        HString textSuffix {&(str[i]), suffixNode->suffix.length, textHash};
+                        if (HashEngine::isEqual(suffixNode->suffix, textSuffix)) {
+                            if (i + suffixNode->suffix.length == length || str[i + suffixNode->suffix.length] == ' ') {
+                                suffixNode->isFound = true;
+                                foundSuffixes.add(suffixNode);
+                                result->append(currWord);
+                                result->append(suffixNode->suffix.str);
+                                result->append("|");
+                            }
                         }
                     }
                     suffixNode = suffixNode->next;

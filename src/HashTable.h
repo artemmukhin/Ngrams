@@ -8,8 +8,6 @@ class HashTable
 private:
     NgramTree **table;
 
-    uint64_t hash(const char *str, uint64_t length) const;
-
 public:
     static const uint64_t CAPACITY;
 

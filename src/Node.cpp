@@ -22,10 +22,9 @@ void Node::addSuffix(const HString suffix)
     SuffixNode *prev = nullptr;
     while (node && node->suffix.length <= suffix.length) {
         // exit, if suff already exists
-        if (node->suffix.hash == suffix.hash) {
-            // if (strcmp(node->suffix.str, suffix.str) == 0)
-                return;
-        }
+        if (HashEngine::isEqual(node->suffix, suffix))
+            return;
+
         prev = node;
         node = node->next;
     }

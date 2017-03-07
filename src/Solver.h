@@ -2,8 +2,6 @@
 
 #include "ProcessingThread.h"
 
-#define THREAD_NUM 2
-
 class Solver
 {
     ProcessingThread thread[THREAD_NUM];
