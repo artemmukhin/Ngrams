@@ -16,7 +16,7 @@ Node::Node(const HString prefix, Node *left, Node *right)
     suffixes()
 {}
 
-void Node::addSuffix(const HString suffix)
+void Node::addSuffix(const HString suffix, int num)//TODO suffix history
 {
     SuffixNode *node = suffixes.getHead();
     SuffixNode *prev = nullptr;
@@ -31,7 +31,7 @@ void Node::addSuffix(const HString suffix)
     suffixes.insert(prev, suffix);
 }
 
-void Node::removeSuffix(const HString suffix)
+void Node::removeSuffix(const HString suffix, int num)//TODO suffix history
 {
     suffixes.remove(suffix);
 }

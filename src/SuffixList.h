@@ -1,15 +1,24 @@
 #pragma once
 
 #include <string>
+#include <queue>
+
 #include "HashFunctions.h"
 
 using namespace std;
 
+struct Change{
+    char type; // -1 - del; 1 = add
+    int num;
+};
+
 struct SuffixNode
 {
     HString suffix;
+    queue<Change> chnages;
+
     SuffixNode *next;
-    bool isFound = false; // only for search
+    int isFound = -1; // only for search
 };
 
 class SuffixList

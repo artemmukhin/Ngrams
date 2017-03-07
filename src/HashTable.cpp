@@ -10,7 +10,7 @@ HashTable::HashTable()
         table[i] = new NgramTree();
 }
 
-void HashTable::add(const char *str, uint64_t length)
+void HashTable::add(const char *str, uint64_t length, int num)
 {
     const char *suffixStr = str;
     uint64_t prefixSize = 0;
@@ -24,10 +24,10 @@ void HashTable::add(const char *str, uint64_t length)
     HString prefix = {str, prefixSize, hashPrefix};
     HString suffix = {suffixStr, length - prefixSize, hashSuffix};
 
-    table[prefix.hash % CAPACITY]->add(prefix, suffix);
+    table[prefix.hash % CAPACITY]->add(prefix, suffix, num);
 }
 
-void HashTable::remove(const char *str, uint64_t length)
+void HashTable::remove(const char *str, uint64_t length, int num)
 {
     const char *suffixStr = str;
     uint64_t prefixSize = 0;
@@ -41,7 +41,7 @@ void HashTable::remove(const char *str, uint64_t length)
     HString prefix = {str, prefixSize, hashPrefix};
     HString suffix = {suffixStr, length - prefixSize, hashSuffix};
 
-    table[prefix.hash % CAPACITY]->remove(prefix, suffix);
+    table[prefix.hash % CAPACITY]->remove(prefix, suffix, num);
 }
 
 const SuffixList *HashTable::suffixesOf(const HString prefix) const

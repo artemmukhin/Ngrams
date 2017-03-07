@@ -28,14 +28,14 @@ class NgramTree
 private:
     Node *root;
 
-    void addHelper(Node *start, const HString prefix, const HString suffix);
+    void addHelper(Node *start, const HString prefix, const HString suffix, int num);
 
-    bool removeHelper(Node *parent, Node *current, const HString prefix, const HString suffix);
+    bool removeHelper(Node *parent, Node *current, const HString prefix, const HString suffix, int num);
 
 public:
     NgramTree();
 
-    void add(const HString prefix, const HString suffix);
+    void add(const HString prefix, const HString suffix, int num);
 
-    bool remove(const HString prefix, const HString suffix);
+    bool remove(const HString prefix, const HString suffix, int num);
 };

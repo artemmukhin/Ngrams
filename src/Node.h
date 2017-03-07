@@ -23,8 +23,8 @@ public:
 
     Node(const HString prefix, Node *left, Node *right);
 
-    void addSuffix(const HString suffix);
+    void addSuffix(const HString suffix, int num);
 
-    void removeSuffix(const HString suffix);
+    void removeSuffix(const HString suffix, int num);
 };
 

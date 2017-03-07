@@ -1,6 +1,7 @@
 #include <iostream>
 #include <sstream>
-#include "HashTable.h"
+
+#include "Solver.h"
 
 using namespace std;
 
@@ -10,36 +11,42 @@ int main()
     for (uint64_t i = 0; i < HashEngine::MAX_LEN; i++)
         HashEngine::POWERS[i + 1] = HashEngine::POWERS[i] * HashEngine::P;
 
-    HashTable ngrams;
+    Solver solver;
 
     string query = "";
     getline(cin, query);
     while (query != "S") {
-        ngrams.add((new string(query))->c_str(), query.length());
+        solver.add((new string(query))->c_str(), query.length(), 0);
         getline(cin, query);
     }
+
+    solver.flush();
+
     puts("R");
 
     query = "";
 
+    int num = 0;
     while (std::getline(std::cin, query)) {
         if (query == "F") {
-            fflush(stdout);
+            solver.flush();
             continue;
         }
+
         string *query_buf = new string(query);
+        num++;
 
         switch (query[0]) {
             case 'Q':
-                puts((ngrams.searchInText(&query_buf->c_str()[2], query.length() - 2))->c_str());
+                solver.solve(&query_buf->c_str()[2], query.length() - 2, num);
                 break;
 
             case 'A':
-                ngrams.add(&query_buf->c_str()[2], query.length() - 2);
+                solver.add(&query_buf->c_str()[2], query.length() - 2, num);
                 break;
 
             case 'D':
-                ngrams.remove(&query_buf->c_str()[2], query.length() - 2);
+                solver.remove(&query_buf->c_str()[2], query.length() - 2, num);
                 break;
 
             default:
