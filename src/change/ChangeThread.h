@@ -26,6 +26,7 @@ public :
     int length;
     int num;
 
+    ChangeThread();
     ChangeThread(HashTable *tree);
     void signal();
 };

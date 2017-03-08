@@ -4,6 +4,8 @@
 
 #include "ChangeThread.h"
 
+ChangeThread::ChangeThread() {}
+
 ChangeThread::ChangeThread(HashTable *tree) {
     this->tree = tree;
     pthread_create(&thread, NULL, routine, (void *) this);

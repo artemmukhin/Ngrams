@@ -21,7 +21,7 @@ public:
 
     const SuffixList *suffixesOf(const HString prefix) const;
 
-    string *searchInText(const char *str, uint64_t length);
+    string *searchInText(const char *str, uint64_t length);//TODO move to new class
 };
 
 class FoundSet

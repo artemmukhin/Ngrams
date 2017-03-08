@@ -15,7 +15,7 @@ struct Change{
 struct SuffixNode
 {
     HString suffix;
-    queue<Change> chnages;
+    queue<Change> chanages;
 
     SuffixNode *next;
     int isFound = -1; // only for search
@@ -30,6 +30,6 @@ public:
     SuffixList();
     SuffixList(const HString suffix);
     SuffixNode *getHead() const;
-    void insert(SuffixNode *node, const HString suffix);
-    void remove(const HString suffix);
+    void insert(SuffixNode *node, const HString suffix, int num);
+    void remove(const HString suffix, int num);
 };

@@ -28,10 +28,10 @@ void Node::addSuffix(const HString suffix, int num)//TODO suffix history
         prev = node;
         node = node->next;
     }
-    suffixes.insert(prev, suffix);
+    suffixes.insert(prev, suffix, num);
 }
 
 void Node::removeSuffix(const HString suffix, int num)//TODO suffix history
 {
-    suffixes.remove(suffix);
+    suffixes.remove(suffix, num);
 }
