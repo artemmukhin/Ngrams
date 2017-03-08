@@ -2,6 +2,8 @@
 
 #include <iostream>
 #include <string>
+#include <pthread.h>
+
 #include "SuffixList.h"
 
 using namespace std;
@@ -17,6 +19,8 @@ private:
 
     Node *left;
     Node *right;
+
+    pthread_mutex_t mutex;
 
 public:
     Node(const HString prefix);

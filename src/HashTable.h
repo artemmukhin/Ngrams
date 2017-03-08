@@ -17,7 +17,7 @@ public:
 
     void remove(const char *str, uint64_t length, int num);
 
-    void clear();//TODO clear func
+    //void clear();//TODO clear func
 
     const SuffixList *suffixesOf(const HString prefix) const;
 

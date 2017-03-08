@@ -19,6 +19,10 @@ struct SuffixNode
 
     SuffixNode *next;
     int isFound = -1; // only for search
+
+    void add(int num);
+    void remove(int num);
+
 };
 
 class SuffixList

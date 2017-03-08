@@ -9,13 +9,16 @@
 #include "HashTable.h"
 #include "Queue.h"
 #include "change/ChangePool.h"
+#include "process/TextProcessor.h"
 
 class Solver {
 
     HashTable ngrams;
 
     Queue texts;
-    ChangePool *change;
+
+    ChangePool change;
+    TextProcessor processor;
 
 public:
     Solver();

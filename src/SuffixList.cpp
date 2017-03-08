@@ -17,7 +17,7 @@ SuffixNode *SuffixList::getHead() const
     return this->head;
 }
 
-void SuffixList::insert(SuffixNode *node, const HString suffix, int num)//TODO history
+void SuffixList::insert(SuffixNode *node, const HString suffix, int num)
 {
     if (node) {
         SuffixNode *tmp = node->next;
@@ -32,9 +32,12 @@ void SuffixList::insert(SuffixNode *node, const HString suffix, int num)//TODO h
         head->suffix = suffix;
         head->next = tmp;
     }
+
+    node->add(num);
+
 }
 
-void SuffixList::remove(const HString suffix, int num)//TODO history
+void SuffixList::remove(const HString suffix, int num)
 {
     SuffixNode *node = head;
     SuffixNode *prev = nullptr;
@@ -45,10 +48,8 @@ void SuffixList::remove(const HString suffix, int num)//TODO history
         prev = node;
         node = node->next;
     }
-    if (node && prev) {
-        prev->next = node->next;
-    }
-    else if (node == head) {
-        this->head = head->next;
-    }
+
+    if (node && prev || node == head)
+        node->remove(num);
+
 }
