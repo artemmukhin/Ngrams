@@ -3,7 +3,6 @@
 #include <cstdint>
 #include <cstring>
 
-
 struct HString
 {
     const char *str;
@@ -51,11 +50,7 @@ public:
             return false;
         if (s1.length != s2.length)
             return false;
-        /*
-        for (uint64_t i = 0; i < s1.length; i++)
-            if (s1.str[i] != s2.str[i])
-                return false;
-        */
+
         return true;
     }
 };

@@ -59,75 +59,19 @@ const SuffixList *HashTable::suffixesOf(const HString prefix) const
     return nullptr;
 }
 
-string *HashTable::searchInText(const char *str, uint64_t length)
-{
-    uint64_t *hashes = new uint64_t[HashEngine::MAX_LEN + 1];
-    HashEngine::hashesOfPrefixes(str, length, hashes);
-
-    string currWord = "";
-    string *result = new string();
-    const SuffixList *suffixes;
-    size_t i = 0;
-    FoundSet foundSuffixes(HashEngine::FOUND_SET_SIZE);
-
-    while (i <= length) {
-        if (str[i] == ' ' || i == length) {
-            suffixes = this->suffixesOf({currWord.c_str(), currWord.length(),
-                                         HashEngine::hashOfString(currWord.c_str(), currWord.length())
-                                        });
-
-            if (suffixes) {
-                SuffixNode *suffixNode = suffixes->getHead();
-                while (suffixNode) {
-                    uint64_t textHash = hashes[i + suffixNode->suffix.length] -
-                        hashes[i] * HashEngine::POWERS[suffixNode->suffix.length];
-
-                    if (!suffixNode->isFound) {
-                        HString textSuffix {&(str[i]), suffixNode->suffix.length, textHash};
-                        if (HashEngine::isEqual(suffixNode->suffix, textSuffix)) {
-                            if (i + suffixNode->suffix.length == length || str[i + suffixNode->suffix.length] == ' ') {
-                                suffixNode->isFound = true;
-                                foundSuffixes.add(suffixNode);
-                                result->append(currWord);
-                                result->append(suffixNode->suffix.str);
-                                result->append("|");
-                            }
-                        }
-                    }
-                    suffixNode = suffixNode->next;
-                }
-            }
-            currWord = "";
-            i++;
-        }
-        currWord += str[i++];
-    }
-
-    uint64_t s = 0;
-    while (s < foundSuffixes.current) {
-        foundSuffixes.set[s]->isFound = false;
-        s++;
-    }
-
-    if (!result->empty())
-        result->pop_back();
-    else
-        result = new string("-1");
-
-    return result;
-}
-
 FoundSet::FoundSet(uint64_t capacity)
     : capacity(capacity),
       current(0)
 {
-    set = new SuffixNode *[capacity];
+    set = new FoundNode [capacity];
 }
 
-void FoundSet::add(SuffixNode *ptr)
+void FoundSet::add(SuffixNode *ptr, const char* prefix)
 {
-    if (current < capacity)
-        set[current] = ptr;
+    if (current < capacity) {
+        set[current].node = ptr;
+        set[current].prefix = prefix;
+    }
 
     current++;
 }

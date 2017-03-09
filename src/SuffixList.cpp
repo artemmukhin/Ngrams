@@ -1,5 +1,44 @@
 #include "SuffixList.h"
 
+void SuffixNode::add(int num) {//TODO check for correct
+
+    if(this->chanages.empty()){
+        this->chanages.push_back({1, num});
+        return;
+    }
+
+    auto it = this->chanages.begin();
+    while(it != this->chanages.end() && (*it).num < num)
+        it++;
+
+    if(it == this->chanages.end()){
+        if(this->chanages.back().type != 1)
+            this->chanages.push_back({1, num});
+        return;
+    }
+
+    it++;
+    this->chanages.emplace(it);
+    *it = {1, num};
+}
+
+void SuffixNode::remove(int num) {//TODO check for correct
+
+    auto it = this->chanages.begin();
+    while(it != this->chanages.end() && (*it).num < num)
+        it++;
+
+    if(it == this->chanages.end()){
+        if(this->chanages.back().type != 0)
+            this->chanages.push_back({0, num});
+        return;
+    }
+
+    it++;
+    this->chanages.emplace(it);
+    *it = {0, num};
+}
+
 SuffixList::SuffixList()
     :
     head(nullptr)

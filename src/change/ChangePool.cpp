@@ -17,6 +17,7 @@ void ChangePool::add(const char* str, int length, int num){
             threads[i].str = str;
             threads[i].length = length;
             threads[i].num = num;
+            cout << "addition given to " << i << endl;
             threads[i].signal();
             break;
         }
@@ -32,6 +33,7 @@ void ChangePool::remove(const char* str, int length, int num){
             threads[i].str = str;
             threads[i].length = length;
             threads[i].num = num;
+            cout << "deletion given to " << i << endl;
             threads[i].signal();
             break;
         }
@@ -41,5 +43,6 @@ void ChangePool::remove(const char* str, int length, int num){
 
 void ChangePool::wait() {
     for(int i = 0; i < CHANGE_THREAD_NUM; i++)
-        while(!threads[i].isEmpty);
+        while(!threads[i].isEmpty)
+            threads[i].signal();
 }

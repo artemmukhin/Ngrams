@@ -5,7 +5,7 @@
 #ifndef NGRAMS_CHANGEPOOL_H
 #define NGRAMS_CHANGEPOOL_H
 
-#define CHANGE_THREAD_NUM 30
+#define CHANGE_THREAD_NUM 1
 
 #include "ChangeThread.h"
 

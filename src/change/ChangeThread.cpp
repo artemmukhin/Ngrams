@@ -8,17 +8,17 @@ ChangeThread::ChangeThread() {}
 
 ChangeThread::ChangeThread(HashTable *tree) {
     this->tree = tree;
-    pthread_create(&thread, NULL, routine, (void *) this);
     pthread_cond_init(&wait, NULL);
     pthread_mutex_init(&mutex, NULL);
+    pthread_create(&thread, NULL, routine, (void *) this);
     isEmpty = true;
 }
 
 void ChangeThread::signal() {
+    isEmpty = false;
     pthread_mutex_lock(&this->mutex);
     pthread_cond_signal(&this->wait);
     pthread_mutex_unlock(&this->mutex);
-    isEmpty = false;
 }
 
 #pragma clang diagnostic push
@@ -27,9 +27,13 @@ void* ChangeThread::routine(void *data) {
 
     ChangeThread* thread = (ChangeThread*) data;
 
+    cout << "Thread init " << thread->thread << endl;
+
     while(true) {
         pthread_mutex_lock(&thread->mutex);
         pthread_cond_wait(&thread->wait, &thread->mutex);
+
+        cout << "wake up " << thread->thread << endl;
 
         if(thread->isAdd)
             thread->tree->add(thread->str, thread->length, thread->num);

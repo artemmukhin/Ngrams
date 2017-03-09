@@ -16,11 +16,11 @@ int main()
     string query = "";
     getline(cin, query);
     while (query != "S") {
-        solver.add((new string(query))->c_str(), query.length(), 0);
+sfd        solver.add((new string(query))->c_str(), query.length(), 0);
         getline(cin, query);
     }
 
-    solver.flush();
+    //solver.flush();
 
     puts("R");
 

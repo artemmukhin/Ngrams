@@ -1,7 +1,7 @@
 #pragma once
 
 #include <string>
-#include <queue>
+#include <list>
 
 #include "HashFunctions.h"
 
@@ -15,7 +15,7 @@ struct Change{
 struct SuffixNode
 {
     HString suffix;
-    queue<Change> chanages;
+    list<Change> chanages;
 
     SuffixNode *next;
     int isFound = -1; // only for search
