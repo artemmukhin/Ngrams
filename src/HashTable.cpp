@@ -14,7 +14,7 @@ void HashTable::add(const char *str, uint64_t length, int num)
 {
     const char *suffixStr = str;
     uint64_t prefixSize = 0;
-    while ( !(*suffixStr == ' ' || prefixSize == length) ) {
+    while (!(*suffixStr == ' ' || prefixSize == length)) {
         suffixStr++;
         prefixSize++;
     }
@@ -31,7 +31,7 @@ void HashTable::remove(const char *str, uint64_t length, int num)
 {
     const char *suffixStr = str;
     uint64_t prefixSize = 0;
-    while ( !(*suffixStr == ' ' || prefixSize == length) ) {
+    while (!(*suffixStr == ' ' || prefixSize == length)) {
         suffixStr++;
         prefixSize++;
     }
@@ -63,10 +63,10 @@ FoundSet::FoundSet(uint64_t capacity)
     : capacity(capacity),
       current(0)
 {
-    set = new FoundNode [capacity];
+    set = new FoundNode[capacity];
 }
 
-void FoundSet::add(SuffixNode *ptr, const char* prefix)
+void FoundSet::add(SuffixNode *ptr, const char *prefix)
 {
     if (current < capacity) {
         set[current].node = ptr;

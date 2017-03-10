@@ -7,22 +7,23 @@
 
 using namespace std;
 
-struct Change{
-    char type; // -1 - del; 1 = add
+struct Change
+{
+    int type; // -1 - del; 1 = add
     int num;
 };
 
 struct SuffixNode
 {
     HString suffix;
-    list<Change> chanages;
+    list <Change> chanages;
 
     SuffixNode *next;
     int isFound = -1; // only for search
 
     void add(int num);
     void remove(int num);
-
+    int lastChangeBefore(int num); // -1 for delete (or 'no add before'), 1 for add
 };
 
 class SuffixList

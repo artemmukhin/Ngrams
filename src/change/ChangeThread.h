@@ -9,7 +9,8 @@
 
 #include "../HashTable.h"
 
-class ChangeThread {
+class ChangeThread
+{
 
     pthread_t thread;
     pthread_mutex_t mutex;
@@ -22,12 +23,13 @@ class ChangeThread {
 public :
     volatile bool isEmpty;
     bool isAdd;
-    const char* str;
+    const char *str;
     int length;
     int num;
 
     ChangeThread();
-    ChangeThread(HashTable *tree);
+    //ChangeThread(HashTable *tree);
+    void setTree(HashTable *tree);
     void signal();
 };
 

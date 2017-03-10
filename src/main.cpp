@@ -14,9 +14,9 @@ int main()
     Solver solver;
 
     string query = "";
-    getline(cin, query);
+    std::getline(std::cin, query);
     while (query != "S") {
-sfd        solver.add((new string(query))->c_str(), query.length(), 0);
+        solver.add((new string(query))->c_str(), query.length(), 0);
         getline(cin, query);
     }
 

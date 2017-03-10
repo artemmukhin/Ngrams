@@ -45,7 +45,8 @@ public:
             hashes[i + 1] = hashes[i] * P + str[i];
     }
 
-    static bool isEqual(const HString s1, const HString s2) {
+    static bool isEqual(const HString s1, const HString s2)
+    {
         if (s1.hash != s2.hash)
             return false;
         if (s1.length != s2.length)

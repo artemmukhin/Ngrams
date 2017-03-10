@@ -27,9 +27,10 @@ public:
 class FoundSet
 {
 
-    struct FoundNode{
+    struct FoundNode
+    {
         SuffixNode *node;
-        const char* prefix;
+        const char *prefix;
     };
 
 private:
@@ -41,5 +42,5 @@ public:
 
     FoundSet(uint64_t capacity);
 
-    void add(SuffixNode *ptr, const char* prefix);
+    void add(SuffixNode *ptr, const char *prefix);
 };

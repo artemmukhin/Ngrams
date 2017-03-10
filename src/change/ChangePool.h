@@ -9,14 +9,15 @@
 
 #include "ChangeThread.h"
 
-class ChangePool {
+class ChangePool
+{
 
-ChangeThread threads[CHANGE_THREAD_NUM];
+    ChangeThread threads[CHANGE_THREAD_NUM];
 
 public :
     ChangePool(HashTable *tree);
-    void add(const char* str, int length, int num);
-    void remove(const char* str, int length, int num);
+    void add(const char *str, int length, int num);
+    void remove(const char *str, int length, int num);
     void wait();
 };
 

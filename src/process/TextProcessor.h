@@ -5,14 +5,15 @@
 #ifndef NGRAMS_TEXTPROCESSOR_H
 #define NGRAMS_TEXTPROCESSOR_H
 
-#define PROCESS_THREAD_NUM 0
+#define PROCESS_THREAD_NUM 1
 
 #include <pthread.h>
 
 #include "../HashTable.h"
 
-struct ThreadData{
-    const char * str;
+struct ThreadData
+{
+    const char *str;
     int start;
     int end;
     int length;
@@ -21,13 +22,14 @@ struct ThreadData{
     pthread_mutex_t mutex;
     pthread_cond_t *wake_up;
 
-    HashTable* tree;
+    HashTable *tree;
     FoundSet *result;
 
     uint64_t **hashes;
 };
 
-class TextProcessor {
+class TextProcessor
+{
 
     pthread_t threads[PROCESS_THREAD_NUM];
     ThreadData data[PROCESS_THREAD_NUM];
@@ -35,11 +37,11 @@ class TextProcessor {
 
     pthread_cond_t start;
 
-    static void* routine(void* data);
+    static void *routine(void *data);
 
 public:
     TextProcessor(HashTable *tree);
-    void process(const char* str, int length, int num);
+    void process(const char *str, int length, int num);
 };
 
 

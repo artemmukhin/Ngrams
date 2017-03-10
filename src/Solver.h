@@ -11,7 +11,8 @@
 #include "change/ChangePool.h"
 #include "process/TextProcessor.h"
 
-class Solver {
+class Solver
+{
 
     HashTable ngrams;
 
@@ -22,9 +23,9 @@ class Solver {
 
 public:
     Solver();
-    void add(const char* str, int length, int num);
-    void remove(const char* str, int length, int num);
-    void solve(const char* str, int length, int num);
+    void add(const char *str, int length, int num);
+    void remove(const char *str, int length, int num);
+    void solve(const char *str, int length, int num);
     void flush();
 };
 

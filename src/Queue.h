@@ -5,17 +5,19 @@
 #ifndef NGRAMS_QUEUE_H
 #define NGRAMS_QUEUE_H
 
-struct QueueNode {
-    const char* str;
+struct QueueNode
+{
+    const char *str;
     int length;
     int num;
 
-    QueueNode* next;
+    QueueNode *next;
 
-    QueueNode(const char* str, int length, int num);
+    QueueNode(const char *str, int length, int num);
 };
 
-class Queue {
+class Queue
+{
 
     QueueNode *head;
     QueueNode *last;
@@ -23,9 +25,9 @@ class Queue {
 public:
     Queue();
 
-    void push(const char* str, int length, int num);
+    void push(const char *str, int length, int num);
     bool isEmpty();
-    QueueNode* pop();
+    QueueNode *pop();
 };
 
 

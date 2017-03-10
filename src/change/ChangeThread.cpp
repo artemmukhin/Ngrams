@@ -4,17 +4,33 @@
 
 #include "ChangeThread.h"
 
-ChangeThread::ChangeThread() {}
+ChangeThread::ChangeThread()
+    : isEmpty(true)
+{
+    pthread_cond_init(&wait, NULL);
+    pthread_mutex_init(&mutex, NULL);
+    pthread_create(&thread, NULL, routine, (void *) this);
+}
 
-ChangeThread::ChangeThread(HashTable *tree) {
+/*
+ChangeThread::ChangeThread(HashTable *tree)
+{
+    isEmpty = true;
     this->tree = tree;
     pthread_cond_init(&wait, NULL);
     pthread_mutex_init(&mutex, NULL);
     pthread_create(&thread, NULL, routine, (void *) this);
-    isEmpty = true;
+}
+*/
+
+void ChangeThread::setTree(HashTable *tree)
+{
+    this->tree = tree;
 }
 
-void ChangeThread::signal() {
+void ChangeThread::signal()
+{
+    // std::cout << "signal\n";
     isEmpty = false;
     pthread_mutex_lock(&this->mutex);
     pthread_cond_signal(&this->wait);
@@ -23,25 +39,30 @@ void ChangeThread::signal() {
 
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wmissing-noreturn"
-void* ChangeThread::routine(void *data) {
+void *ChangeThread::routine(void *data)
+{
 
-    ChangeThread* thread = (ChangeThread*) data;
+    ChangeThread *thread = (ChangeThread *) data;
 
     cout << "Thread init " << thread->thread << endl;
 
-    while(true) {
+    while (true) {
         pthread_mutex_lock(&thread->mutex);
-        pthread_cond_wait(&thread->wait, &thread->mutex);
+        // std::cout << "wait for signal...\n";
+        while (thread->isEmpty) {
+            pthread_cond_wait(&thread->wait, &thread->mutex);
+        }
 
-        cout << "wake up " << thread->thread << endl;
+        // cout << "wake up " << thread->thread << endl;
 
-        if(thread->isAdd)
+        if (thread->isAdd)
             thread->tree->add(thread->str, thread->length, thread->num);
         else
             thread->tree->remove(thread->str, thread->length, thread->num);
 
         thread->isEmpty = true;
-        pthread_mutex_lock(&thread->mutex);
+        pthread_mutex_unlock(&thread->mutex);
     }
 }
+
 #pragma clang diagnostic pop
