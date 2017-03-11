@@ -40,10 +40,19 @@ void TextProcessor::process(const char *str, int length, int num)
     pthread_cond_broadcast(&startCond);
 
     string result = "";
+
+    // wait for all threads
     for (int i = 0; i < PROCESS_THREAD_NUM; i++) {
-        //puts("waiting for thread");
         while (data[i].isStarted)
             pthread_cond_wait(&finishCond, &(data[i].mutex));
+    }
+
+    for (int i = 0; i < PROCESS_THREAD_NUM; i++) {
+        //puts("waiting for thread");
+        /*
+        while (data[i].isStarted)
+            pthread_cond_wait(&finishCond, &(data[i].mutex));
+        */
         //puts("finish waiting");
         uint64_t s = 0;
         while (s < data[i].result->current) {
