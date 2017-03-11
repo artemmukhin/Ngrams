@@ -1,11 +1,6 @@
-//
-// Created by opot on 07.03.17.
-//
+#pragma once
 
-#ifndef NGRAMS_TEXTPROCESSOR_H
-#define NGRAMS_TEXTPROCESSOR_H
-
-#define PROCESS_THREAD_NUM 1
+#define PROCESS_THREAD_NUM 2
 
 #include <pthread.h>
 
@@ -21,6 +16,8 @@ struct ThreadData
 
     pthread_mutex_t mutex;
     pthread_cond_t *wake_up;
+    pthread_cond_t *sleep;
+    bool isStarted;
 
     HashTable *tree;
     FoundSet *result;
@@ -30,19 +27,18 @@ struct ThreadData
 
 class TextProcessor
 {
-
+private:
     pthread_t threads[PROCESS_THREAD_NUM];
     ThreadData data[PROCESS_THREAD_NUM];
     uint64_t *hashes;
 
-    pthread_cond_t start;
+    pthread_cond_t startCond;
+    pthread_cond_t finishCond;
 
     static void *routine(void *data);
 
 public:
+    TextProcessor() = delete;
     TextProcessor(HashTable *tree);
     void process(const char *str, int length, int num);
 };
-
-
-#endif //NGRAMS_TEXTPROCESSOR_H

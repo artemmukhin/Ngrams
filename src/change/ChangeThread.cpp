@@ -1,7 +1,3 @@
-//
-// Created by opot on 07.03.17.
-//
-
 #include "ChangeThread.h"
 
 ChangeThread::ChangeThread()
@@ -44,7 +40,7 @@ void *ChangeThread::routine(void *data)
 
     ChangeThread *thread = (ChangeThread *) data;
 
-    cout << "Thread init " << thread->thread << endl;
+    //cout << "Thread init " << thread->thread << endl;
 
     while (true) {
         pthread_mutex_lock(&thread->mutex);

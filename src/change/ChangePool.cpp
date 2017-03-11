@@ -1,7 +1,3 @@
-//
-// Created by opot on 07.03.17.
-//
-
 #include "ChangePool.h"
 
 ChangePool::ChangePool(HashTable *tree)
@@ -19,7 +15,7 @@ void ChangePool::add(const char *str, int length, int num)
             threads[i].str = str;
             threads[i].length = length;
             threads[i].num = num;
-            cout << "addition given to " << i << endl;
+            //cout << "addition given to " << i << endl;
             threads[i].signal();
             break;
         }
@@ -36,7 +32,7 @@ void ChangePool::remove(const char *str, int length, int num)
             threads[i].str = str;
             threads[i].length = length;
             threads[i].num = num;
-            cout << "deletion given to " << i << endl;
+            //cout << "deletion given to " << i << endl;
             threads[i].signal();
             break;
         }

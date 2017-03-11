@@ -33,5 +33,5 @@ void Solver::flush()
     }
 
     //ngrams.clear();// TODO clear commented
-    fflush(stdout);
+    std::fflush(stdout);
 }

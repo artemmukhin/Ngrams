@@ -1,9 +1,4 @@
-//
-// Created by opot on 07.03.17.
-//
-
-#ifndef NGRAMS_CHANGEPOOL_H
-#define NGRAMS_CHANGEPOOL_H
+#pragma once
 
 #define CHANGE_THREAD_NUM 1
 
@@ -11,15 +6,12 @@
 
 class ChangePool
 {
-
+private:
     ChangeThread threads[CHANGE_THREAD_NUM];
 
-public :
+public:
     ChangePool(HashTable *tree);
     void add(const char *str, int length, int num);
     void remove(const char *str, int length, int num);
     void wait();
 };
-
-
-#endif //NGRAMS_CHANGEPOOL_H

@@ -13,7 +13,7 @@
 
 class Solver
 {
-
+private:
     HashTable ngrams;
 
     Queue texts;

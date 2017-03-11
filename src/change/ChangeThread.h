@@ -1,9 +1,4 @@
-//
-// Created by opot on 07.03.17.
-//
-
-#ifndef NGRAMS_CHNAGETHREAD_H
-#define NGRAMS_CHNAGETHREAD_H
+#pragma once
 
 #include <pthread.h>
 
@@ -32,6 +27,3 @@ public :
     void setTree(HashTable *tree);
     void signal();
 };
-
-
-#endif //NGRAMS_CHNAGETHREAD_H
