@@ -27,8 +27,8 @@ void ChangeThread::setTree(HashTable *tree)
 void ChangeThread::signal()
 {
     // std::cout << "signal\n";
-    isEmpty = false;
     pthread_mutex_lock(&this->mutex);
+    isEmpty = false;
     pthread_cond_signal(&this->wait);
     pthread_mutex_unlock(&this->mutex);
 }
@@ -43,12 +43,11 @@ void *ChangeThread::routine(void *data)
     //cout << "Thread init " << thread->thread << endl;
 
     while (true) {
-        pthread_mutex_lock(&thread->mutex);
         // std::cout << "wait for signal...\n";
+        pthread_mutex_lock(&thread->mutex);
         while (thread->isEmpty) {
             pthread_cond_wait(&thread->wait, &thread->mutex);
         }
-
         // cout << "wake up " << thread->thread << endl;
 
         if (thread->isAdd)

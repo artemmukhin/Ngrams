@@ -1,10 +1,10 @@
 #pragma once
 
-#define PROCESS_THREAD_NUM 2
 
 #include <pthread.h>
 
 #include "../HashTable.h"
+#include "../Constants.h"
 
 struct ThreadData
 {
@@ -14,7 +14,8 @@ struct ThreadData
     int length;
     int num;
 
-    pthread_mutex_t mutex;
+    pthread_mutex_t mutexSleep;
+    pthread_mutex_t mutexWork;
     pthread_cond_t *wake_up;
     pthread_cond_t *sleep;
     bool isStarted;

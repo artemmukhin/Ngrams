@@ -1,7 +1,3 @@
-//
-// Created by opot on 07.03.17.
-//
-
 #include "Solver.h"
 
 Solver::Solver()

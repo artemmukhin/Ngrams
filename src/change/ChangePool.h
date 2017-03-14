@@ -1,8 +1,7 @@
 #pragma once
 
-#define CHANGE_THREAD_NUM 1
-
 #include "ChangeThread.h"
+#include "../Constants.h"
 
 class ChangePool
 {

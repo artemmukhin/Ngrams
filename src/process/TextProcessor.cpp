@@ -5,7 +5,8 @@ TextProcessor::TextProcessor(HashTable *tree)
     pthread_cond_init(&startCond, NULL);
     pthread_cond_init(&finishCond, NULL);
     for (int i = 0; i < PROCESS_THREAD_NUM; i++) {
-        pthread_mutex_init(&data[i].mutex, NULL);
+        pthread_mutex_init(&data[i].mutexSleep, NULL);
+        pthread_mutex_init(&data[i].mutexWork, NULL);
         data[i].wake_up = &startCond;
         data[i].sleep = &finishCond;
         data[i].isStarted = false;
@@ -31,23 +32,29 @@ void TextProcessor::process(const char *str, int length, int num)
         data[i].isStarted = true;
 
         // is it necessary?
-        //pthread_mutex_lock(&data[i].mutex);
+        pthread_mutex_lock(&data[i].mutexSleep);
     }
 
     hashes = new uint64_t[HashEngine::MAX_LEN + 1];
     HashEngine::hashesOfPrefixes(str, length, hashes);
 
     pthread_cond_broadcast(&startCond);
+    for (int i = 0; i < PROCESS_THREAD_NUM; i++) {
+        pthread_mutex_unlock(&data[i].mutexSleep);
+    }
 
     string result = "";
 
     // wait for all threads
     for (int i = 0; i < PROCESS_THREAD_NUM; i++) {
+        pthread_mutex_lock(&data[i].mutexSleep);
         while (data[i].isStarted)
-            pthread_cond_wait(&finishCond, &(data[i].mutex));
+            pthread_cond_wait(&finishCond, &(data[i].mutexSleep));
+        pthread_mutex_unlock(&data[i].mutexSleep);
     }
 
     for (int i = 0; i < PROCESS_THREAD_NUM; i++) {
+        pthread_mutex_lock(&data[i].mutexSleep);
         //puts("waiting for thread");
         /*
         while (data[i].isStarted)
@@ -63,7 +70,7 @@ void TextProcessor::process(const char *str, int length, int num)
             s++;
         }
 
-        pthread_mutex_unlock(&data[i].mutex);
+        pthread_mutex_unlock(&data[i].mutexSleep);
     }
 
     if (result == "")
@@ -135,16 +142,20 @@ void *TextProcessor::routine(void *data)
     ThreadData *tdata = (ThreadData *) data;
     while (true) {
         //puts("routine");
-        pthread_mutex_lock(&tdata->mutex);
-        while (!tdata->isStarted)
-            pthread_cond_wait(tdata->wake_up, &tdata->mutex);
 
+        pthread_mutex_lock(&tdata->mutexWork);
+        while (!tdata->isStarted) {
+            tdata->isStarted = false;
+            pthread_cond_wait(tdata->wake_up, &tdata->mutexWork);
+        }
+        pthread_mutex_unlock(&tdata->mutexWork);
+
+        pthread_mutex_lock(&tdata->mutexSleep);
         searchInText(tdata);
-
         tdata->isStarted = false;
         pthread_cond_signal(tdata->sleep);
         //puts("signal for finish");
-        pthread_mutex_unlock(&tdata->mutex);
+        pthread_mutex_unlock(&tdata->mutexSleep);
     }
 }
 #pragma clang diagnostic pop

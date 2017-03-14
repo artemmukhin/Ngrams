@@ -1,64 +1,116 @@
 #include "SuffixList.h"
 
+
+ChangeList::ChangeList()
+    : head(nullptr),
+      last(nullptr)
+{}
+
+ChangeNode *ChangeList::getHead() const
+{
+    return this->head;
+}
+
+void ChangeList::insert(ChangeNode *node, Change change)
+{
+    if (node) {
+        ChangeNode *tmp = node->next;
+        node->next = new ChangeNode;
+        node->next->change = change;
+        node->next->next = tmp;
+    }
+        // insert after nullptr == insert before head
+    else {
+        ChangeNode *tmp = head;
+        head = new ChangeNode;
+        head->change = change;
+        head->next = tmp;
+    }
+
+}
+
+void ChangeList::add(int num)
+{
+    // ерунда, надо переписать с добавлением изменения в _нужное_ место, а в SuffixNode::add вызывать это
+
+    // [1, 4, 5, 9] <-- 7
+    // [1, 4, 5, 9] <-- 15
+    // [2, 4, 5, 9] <-- 1
+    ChangeNode *node = head;
+    ChangeNode *prev = nullptr;
+    while (node && node->change.num < num) {
+        prev = node;
+        node = node->next;
+    }
+
+    if (prev == this->last && prev != nullptr) {
+        if (this->last->change.type != 1)
+            this->insert(last, {1, num});
+        return;
+    }
+
+    this->insert(prev, {1, num});
+}
+
+void ChangeList::remove(int num)
+{
+    ChangeNode *node = head;
+    ChangeNode *prev = nullptr;
+    while (node && node->change.num < num) {
+        prev = node;
+        node = node->next;
+    }
+
+    if (prev == this->last && prev != nullptr) {
+        if (this->last->change.type != -1)
+            this->insert(last, {-1, num});
+        return;
+    }
+
+    this->insert(prev, {-1, num});
+}
+
+int ChangeList::lastChangeBefore(int num)
+{
+    // [1, 4, 5, 9] <-- 7
+    // [1, 4, 5, 9] <-- 15
+    // [2, 4, 5, 9] <-- 1
+
+    if (head == nullptr)
+        return -1;
+
+    ChangeNode *node = head;
+    ChangeNode *prev = nullptr;
+    while (node && node->change.num < num) {
+        prev = node;
+        node = node->next;
+    }
+
+    if (prev == nullptr)
+        return -1;
+
+    head = prev; // "remove" changes before this last change
+    return prev->change.type;
+}
+
+
 void SuffixNode::add(int num)
 {
-    if (this->chanages.empty()) {
-        this->chanages.push_back({1, num});
-        return;
-    }
-
-    auto it = this->chanages.begin();
-    while (it != this->chanages.end() && (*it).num < num)
-        it++;
-
-    if (it == this->chanages.end()) {
-        if (this->chanages.back().type != 1)
-            this->chanages.push_back({1, num});
-        return;
-    }
-
-    it++;
-    this->chanages.emplace(it, Change{1, num});
+    changes.add(num);
 }
 
 void SuffixNode::remove(int num)
 {
-    auto it = this->chanages.begin();
-    while (it != this->chanages.end() && (*it).num < num)
-        it++;
-
-    if (it == this->chanages.end()) {
-        if (this->chanages.back().type != -1)
-            this->chanages.push_back({-1, num});
-        return;
-    }
-
-    it++;
-    this->chanages.emplace(it, Change{-1, num});
+    changes.remove(num);
 }
 
 int SuffixNode::lastChangeBefore(int num)
 {
-    if (this->chanages.empty())
-        return -1;
-    auto it = this->chanages.begin();
-    while (it != this->chanages.end() && (*it).num < num)
-        it++;
-
-    if (it == this->chanages.begin()) {
-        if ((*it).num < num)
-            return (*it).type;
-        else
-            return -1;
-    }
-
-    it--;
-    return (*it).type;
+    return changes.lastChangeBefore(num);
 }
 
 SuffixList::SuffixList()
-    :
-    head(nullptr)
+    : head(nullptr)
 {}
 
 SuffixList::SuffixList(const HString suffix)
@@ -104,7 +156,6 @@ void SuffixList::remove(const HString suffix, int num)
         node = node->next;
     }
 
-    if (node && prev || node == head)
+    if ((node && prev) || (node == head && node != nullptr))
         node->remove(num);
-
 }

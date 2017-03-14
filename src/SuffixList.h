@@ -13,10 +13,31 @@ struct Change
     int num;
 };
 
+struct ChangeNode
+{
+    Change change;
+    ChangeNode *next;
+};
+
+class ChangeList
+{
+private:
+    ChangeNode *head;
+    ChangeNode *last;
+public:
+    ChangeList();
+    //ChangeList()
+    ChangeNode *getHead() const;
+    void insert(ChangeNode *node, Change change);
+    void add(int num);
+    void remove(int num);
+    int lastChangeBefore(int num); // -1 for delete (or 'no add before'), 1 for add
+};
+
 struct SuffixNode
 {
     HString suffix;
-    list <Change> chanages;
+    ChangeList changes;
 
     SuffixNode *next;
     int isFound = -1; // only for search

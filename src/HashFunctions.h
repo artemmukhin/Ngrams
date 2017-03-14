@@ -28,6 +28,7 @@ public:
     static uint64_t *POWERS;
     static uint64_t FOUND_SET_SIZE;
 
+
     static uint64_t hashOfString(const char *str, uint64_t length)
     {
         staticHashes[0] = 0;
