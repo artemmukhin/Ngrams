@@ -3,64 +3,47 @@
 TextProcessor::TextProcessor(HashTable *tree)
 {
     pthread_cond_init(&startCond, NULL);
-    pthread_cond_init(&finishCond, NULL);
     for (int i = 0; i < PROCESS_THREAD_NUM; i++) {
-        pthread_mutex_init(&data[i].mutexSleep, NULL);
-        pthread_mutex_init(&data[i].mutexWork, NULL);
+        pthread_mutex_init(&data[i].mutex, NULL);
         data[i].wake_up = &startCond;
-        data[i].sleep = &finishCond;
         data[i].isStarted = false;
         data[i].tree = tree;
         data[i].hashes = &hashes;
-        pthread_create(&threads[i], NULL, routine, (void *) &data[i]);
     }
 }
 
 void TextProcessor::process(const char *str, int length, int num)
 {
+    //puts("process: start");
     for (int i = 0; i < PROCESS_THREAD_NUM; i++) {
         data[i].str = str;
-        // data[i].start = length - (length / PROCESS_THREAD_NUM) * i;
-        // data[i].end = (length / PROCESS_THREAD_NUM) * i;
         data[i].start = (length / PROCESS_THREAD_NUM) * i;
         data[i].end = (length / PROCESS_THREAD_NUM) * (i + 1) - 1;
         if (data[i].end > length)
             data[i].end = length;
         data[i].length = length;
         data[i].num = num;
-
         data[i].isStarted = true;
 
-        // is it necessary?
-        pthread_mutex_lock(&data[i].mutexSleep);
+        pthread_create(&threads[i], NULL, routine, (void *) &data[i]);
     }
 
     hashes = new uint64_t[HashEngine::MAX_LEN + 1];
     HashEngine::hashesOfPrefixes(str, length, hashes);
 
-    pthread_cond_broadcast(&startCond);
+    //pthread_cond_broadcast(&startCond);
+    //puts("process: signal");
     for (int i = 0; i < PROCESS_THREAD_NUM; i++) {
-        pthread_mutex_unlock(&data[i].mutexSleep);
+        pthread_mutex_unlock(&data[i].mutex);
+    }
+
+    for (int i = 0; i < PROCESS_THREAD_NUM; i++) {
+        pthread_join(threads[i], NULL);
     }
 
     string result = "";
-
-    // wait for all threads
+    //puts("process: output");
     for (int i = 0; i < PROCESS_THREAD_NUM; i++) {
-        pthread_mutex_lock(&data[i].mutexSleep);
-        while (data[i].isStarted)
-            pthread_cond_wait(&finishCond, &(data[i].mutexSleep));
-        pthread_mutex_unlock(&data[i].mutexSleep);
-    }
-
-    for (int i = 0; i < PROCESS_THREAD_NUM; i++) {
-        pthread_mutex_lock(&data[i].mutexSleep);
-        //puts("waiting for thread");
-        /*
-        while (data[i].isStarted)
-            pthread_cond_wait(&finishCond, &(data[i].mutex));
-        */
-        //puts("finish waiting");
         uint64_t s = 0;
         while (s < data[i].result->current) {
             if (data[i].result->set[s].node->isFound != -1) {
@@ -69,8 +52,6 @@ void TextProcessor::process(const char *str, int length, int num)
             }
             s++;
         }
-
-        pthread_mutex_unlock(&data[i].mutexSleep);
     }
 
     if (result == "")
@@ -140,22 +121,18 @@ void searchInText(ThreadData *data)
 void *TextProcessor::routine(void *data)
 {
     ThreadData *tdata = (ThreadData *) data;
-    while (true) {
-        //puts("routine");
+    puts("routine: start");
 
-        pthread_mutex_lock(&tdata->mutexWork);
-        while (!tdata->isStarted) {
-            tdata->isStarted = false;
-            pthread_cond_wait(tdata->wake_up, &tdata->mutexWork);
-        }
-        pthread_mutex_unlock(&tdata->mutexWork);
+    //pthread_mutex_lock(&tdata->mutex);
+    //while (!tdata->isStarted) {
+    //    pthread_cond_wait(tdata->wake_up, &tdata->mutex);
+    //}
 
-        pthread_mutex_lock(&tdata->mutexSleep);
-        searchInText(tdata);
-        tdata->isStarted = false;
-        pthread_cond_signal(tdata->sleep);
-        //puts("signal for finish");
-        pthread_mutex_unlock(&tdata->mutexSleep);
-    }
+    //puts("routine: searching");
+    searchInText(tdata);
+
+    //pthread_mutex_unlock(&tdata->mutex);
+    puts("routine: finish");
+    pthread_exit(0);
 }
 #pragma clang diagnostic pop

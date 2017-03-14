@@ -14,10 +14,8 @@ struct ThreadData
     int length;
     int num;
 
-    pthread_mutex_t mutexSleep;
-    pthread_mutex_t mutexWork;
+    pthread_mutex_t mutex;
     pthread_cond_t *wake_up;
-    pthread_cond_t *sleep;
     bool isStarted;
 
     HashTable *tree;
@@ -34,7 +32,6 @@ private:
     uint64_t *hashes;
 
     pthread_cond_t startCond;
-    pthread_cond_t finishCond;
 
     static void *routine(void *data);
 
