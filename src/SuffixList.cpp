@@ -31,11 +31,6 @@ void ChangeList::insert(ChangeNode *node, Change change)
 
 void ChangeList::add(int num)
 {
-    // ерунда, надо переписать с добавлением изменения в _нужное_ место, а в SuffixNode::add вызывать это
-
-    // [1, 4, 5, 9] <-- 7
-    // [1, 4, 5, 9] <-- 15
-    // [2, 4, 5, 9] <-- 1
     ChangeNode *node = head;
     ChangeNode *prev = nullptr;
     while (node && node->change.num < num) {
@@ -72,10 +67,6 @@ void ChangeList::remove(int num)
 
 int ChangeList::lastChangeBefore(int num)
 {
-    // [1, 4, 5, 9] <-- 7
-    // [1, 4, 5, 9] <-- 15
-    // [2, 4, 5, 9] <-- 1
-
     if (head == nullptr)
         return -1;
 
@@ -89,7 +80,7 @@ int ChangeList::lastChangeBefore(int num)
     if (prev == nullptr)
         return -1;
 
-    head = prev; // "remove" changes before this last change
+    //head = prev; // "remove" changes before this last change
     return prev->change.type;
 }
 

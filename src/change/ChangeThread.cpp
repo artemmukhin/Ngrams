@@ -37,7 +37,6 @@ void ChangeThread::signal()
 #pragma clang diagnostic ignored "-Wmissing-noreturn"
 void *ChangeThread::routine(void *data)
 {
-
     ChangeThread *thread = (ChangeThread *) data;
 
     //cout << "Thread init " << thread->thread << endl;
@@ -55,9 +54,22 @@ void *ChangeThread::routine(void *data)
         else
             thread->tree->remove(thread->str, thread->length, thread->num);
 
+        pthread_mutex_lock(thread->poolMutex);
         thread->isEmpty = true;
         pthread_mutex_unlock(&thread->mutex);
+
+        if (thread->isEmpty == false)
+            puts("WHAAT?!");
+
+        pthread_cond_signal(thread->poolCond);
+        pthread_mutex_unlock(thread->poolMutex);
     }
+}
+
+void ChangeThread::setMutexAndCond(pthread_mutex_t *mutex, pthread_cond_t *finished)
+{
+    this->poolMutex = mutex;
+    this->poolCond = finished;
 }
 
 #pragma clang diagnostic pop

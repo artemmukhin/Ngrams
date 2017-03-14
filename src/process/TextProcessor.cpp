@@ -24,25 +24,17 @@ void TextProcessor::process(const char *str, int length, int num)
         data[i].length = length;
         data[i].num = num;
         data[i].isStarted = true;
-
-        pthread_create(&threads[i], NULL, routine, (void *) &data[i]);
     }
 
     hashes = new uint64_t[HashEngine::MAX_LEN + 1];
     HashEngine::hashesOfPrefixes(str, length, hashes);
 
-    //pthread_cond_broadcast(&startCond);
-    //puts("process: signal");
     for (int i = 0; i < PROCESS_THREAD_NUM; i++) {
-        pthread_mutex_unlock(&data[i].mutex);
-    }
-
-    for (int i = 0; i < PROCESS_THREAD_NUM; i++) {
+        pthread_create(&threads[i], NULL, routine, (void *) &data[i]);
         pthread_join(threads[i], NULL);
     }
 
     string result = "";
-    //puts("process: output");
     for (int i = 0; i < PROCESS_THREAD_NUM; i++) {
         uint64_t s = 0;
         while (s < data[i].result->current) {
@@ -81,7 +73,8 @@ void searchInText(ThreadData *data)
     bool isContinue = true;
     while (i <= data->length && isContinue) {
         if (data->str[i] == ' ' || i == data->length) {
-            if (i >= data->end) isContinue = false;
+            if (i >= data->end)
+                isContinue = false;
 
             suffixes = data->tree->suffixesOf({currWord->c_str(), currWord->length(),
                                                HashEngine::hashOfString(currWord->c_str(), currWord->length())
@@ -121,18 +114,11 @@ void searchInText(ThreadData *data)
 void *TextProcessor::routine(void *data)
 {
     ThreadData *tdata = (ThreadData *) data;
-    puts("routine: start");
+    //puts("routine: start");
 
-    //pthread_mutex_lock(&tdata->mutex);
-    //while (!tdata->isStarted) {
-    //    pthread_cond_wait(tdata->wake_up, &tdata->mutex);
-    //}
-
-    //puts("routine: searching");
     searchInText(tdata);
 
-    //pthread_mutex_unlock(&tdata->mutex);
-    puts("routine: finish");
+    //puts("routine: finish");
     pthread_exit(0);
 }
 #pragma clang diagnostic pop

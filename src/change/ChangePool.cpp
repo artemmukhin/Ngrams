@@ -2,8 +2,14 @@
 
 ChangePool::ChangePool(HashTable *tree)
 {
-    for (int i = 0; i < CHANGE_THREAD_NUM; i++)
+    pthread_mutex_init(&mutex, NULL);
+
+    for (int i = 0; i < CHANGE_THREAD_NUM; i++) {
+        pthread_cond_init(&finished[i], NULL);
+
         threads[i].setTree(tree);
+        threads[i].setMutexAndCond(&this->mutex, &this->finished[i]);
+    }
 }
 
 void ChangePool::add(const char *str, int length, int num)
@@ -44,5 +50,5 @@ void ChangePool::wait()
 {
     for (int i = 0; i < CHANGE_THREAD_NUM; i++)
         while (!threads[i].isEmpty)
-            threads[i].signal();
+            pthread_cond_wait(&finished[i], &mutex);
 }
