@@ -19,7 +19,7 @@ int main()
         solver.add((new string(query))->c_str(), query.length(), 0);
         getline(cin, query);
     }
-
+    solver.waitForInit();
     //solver.flush();
 
     puts("R");

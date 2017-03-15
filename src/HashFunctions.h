@@ -13,7 +13,7 @@ struct HString
 class HashEngine
 {
 private:
-    static uint64_t *staticHashes;
+    uint64_t *staticHashes; // not static
 
     HashEngine()
     {}
@@ -26,16 +26,20 @@ public:
     static const uint64_t MAX_LEN;
     static const uint64_t P;
     static uint64_t *POWERS;
-    static uint64_t FOUND_SET_SIZE;
+    static const uint64_t FOUND_SET_SIZE;
 
 
     static uint64_t hashOfString(const char *str, uint64_t length)
     {
+        uint64_t *staticHashes = new uint64_t[MAX_LEN + 1];
+
         staticHashes[0] = 0;
         for (uint64_t i = 0; i < length; i++)
             staticHashes[i + 1] = staticHashes[i] * P + str[i];
+        uint64_t result = staticHashes[length];
 
-        return staticHashes[length];
+        delete[] staticHashes;
+        return result;
     }
 
     // this method is used only for search in text

@@ -10,8 +10,9 @@ HashTable::HashTable()
         table[i] = new NgramTree();
 }
 
-void HashTable::add(const char *str, uint64_t length, int num)
+void HashTable::add(const char *str, uint64_t length, uint64_t num)
 {
+    //cout << "HashTable: add " << str << " (" << num << ")" << endl;
     const char *suffixStr = str;
     uint64_t prefixSize = 0;
     while (!(*suffixStr == ' ' || prefixSize == length)) {
@@ -27,8 +28,9 @@ void HashTable::add(const char *str, uint64_t length, int num)
     table[prefix.hash % CAPACITY]->add(prefix, suffix, num);
 }
 
-void HashTable::remove(const char *str, uint64_t length, int num)
+void HashTable::remove(const char *str, uint64_t length, uint64_t num)
 {
+    //cout << "HashTable: remove " << str << " (" << num << ")" << endl;
     const char *suffixStr = str;
     uint64_t prefixSize = 0;
     while (!(*suffixStr == ' ' || prefixSize == length)) {

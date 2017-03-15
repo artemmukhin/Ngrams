@@ -26,7 +26,7 @@ void ChangeThread::setTree(HashTable *tree)
 
 void ChangeThread::signal()
 {
-    // std::cout << "signal\n";
+    //std::cout << "signal\n";
     pthread_mutex_lock(&this->mutex);
     isEmpty = false;
     pthread_cond_signal(&this->wait);
@@ -56,20 +56,20 @@ void *ChangeThread::routine(void *data)
 
         pthread_mutex_lock(thread->poolMutex);
         thread->isEmpty = true;
-        pthread_mutex_unlock(&thread->mutex);
 
-        if (thread->isEmpty == false)
-            puts("WHAAT?!");
-
+        //cout << "routine " << thread->numberOfChangeTread << ": signal to finish" << endl;
         pthread_cond_signal(thread->poolCond);
+
+        pthread_mutex_unlock(&thread->mutex);
         pthread_mutex_unlock(thread->poolMutex);
     }
 }
 
-void ChangeThread::setMutexAndCond(pthread_mutex_t *mutex, pthread_cond_t *finished)
+void ChangeThread::setMutexAndCond(pthread_mutex_t *mutex, pthread_cond_t *finished, int n)
 {
     this->poolMutex = mutex;
     this->poolCond = finished;
+    this->numberOfChangeTread = n;
 }
 
 #pragma clang diagnostic pop

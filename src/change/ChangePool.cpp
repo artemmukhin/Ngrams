@@ -8,11 +8,11 @@ ChangePool::ChangePool(HashTable *tree)
         pthread_cond_init(&finished[i], NULL);
 
         threads[i].setTree(tree);
-        threads[i].setMutexAndCond(&this->mutex, &this->finished[i]);
+        threads[i].setMutexAndCond(&this->mutex, &this->finished[i], i);
     }
 }
 
-void ChangePool::add(const char *str, int length, int num)
+void ChangePool::add(const char *str, uint64_t length, uint64_t num)
 {
     int i = 0;
     while (true) {
@@ -21,7 +21,7 @@ void ChangePool::add(const char *str, int length, int num)
             threads[i].str = str;
             threads[i].length = length;
             threads[i].num = num;
-            //cout << "addition given to " << i << endl;
+            //cout << str << "(" << num << ")" << ": " << "addition given to " << i << endl;
             threads[i].signal();
             break;
         }
@@ -29,7 +29,7 @@ void ChangePool::add(const char *str, int length, int num)
     }
 }
 
-void ChangePool::remove(const char *str, int length, int num)
+void ChangePool::remove(const char *str, uint64_t length, uint64_t num)
 {
     int i = 0;
     while (true) {
@@ -38,7 +38,7 @@ void ChangePool::remove(const char *str, int length, int num)
             threads[i].str = str;
             threads[i].length = length;
             threads[i].num = num;
-            //cout << "deletion given to " << i << endl;
+            //cout << str << "(" << num << ")" << ": " << "deletion given to " << i << endl;
             threads[i].signal();
             break;
         }
@@ -48,7 +48,12 @@ void ChangePool::remove(const char *str, int length, int num)
 
 void ChangePool::wait()
 {
-    for (int i = 0; i < CHANGE_THREAD_NUM; i++)
-        while (!threads[i].isEmpty)
+    for (int i = 0; i < CHANGE_THREAD_NUM; i++) {
+        pthread_mutex_lock(&mutex);
+        while (!threads[i].isEmpty) {
+            //cout << "ChangePool: wait " << i << endl;
             pthread_cond_wait(&finished[i], &mutex);
+        }
+        pthread_mutex_unlock(&mutex);
+    }
 }

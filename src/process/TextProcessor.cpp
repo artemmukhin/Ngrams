@@ -5,14 +5,12 @@ TextProcessor::TextProcessor(HashTable *tree)
     pthread_cond_init(&startCond, NULL);
     for (int i = 0; i < PROCESS_THREAD_NUM; i++) {
         pthread_mutex_init(&data[i].mutex, NULL);
-        data[i].wake_up = &startCond;
-        data[i].isStarted = false;
         data[i].tree = tree;
         data[i].hashes = &hashes;
     }
 }
 
-void TextProcessor::process(const char *str, int length, int num)
+void TextProcessor::process(const char *str, uint64_t length, uint64_t num)
 {
     //puts("process: start");
     for (int i = 0; i < PROCESS_THREAD_NUM; i++) {
@@ -23,7 +21,6 @@ void TextProcessor::process(const char *str, int length, int num)
             data[i].end = length;
         data[i].length = length;
         data[i].num = num;
-        data[i].isStarted = true;
     }
 
     hashes = new uint64_t[HashEngine::MAX_LEN + 1];

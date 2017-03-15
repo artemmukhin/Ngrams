@@ -22,7 +22,6 @@ Node::Node(const HString prefix, Node *left, Node *right)
 
 void Node::addSuffix(const HString suffix, int num)
 {
-
     pthread_mutex_lock(&mutex);
 
     SuffixNode *node = suffixes.getHead();

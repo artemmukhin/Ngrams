@@ -1,10 +1,4 @@
-//
-// Created by opot on 07.03.17.
-//
-
-#ifndef NGRAMS_SOLVER_H
-#define NGRAMS_SOLVER_H
-
+#pragma once
 
 #include "HashTable.h"
 #include "Queue.h"
@@ -23,11 +17,9 @@ private:
 
 public:
     Solver();
-    void add(const char *str, int length, int num);
-    void remove(const char *str, int length, int num);
-    void solve(const char *str, int length, int num);
+    void add(const char *str, uint64_t length, uint64_t num);
+    void remove(const char *str, uint64_t length, uint64_t num);
+    void solve(const char *str, uint64_t length, uint64_t num);
     void flush();
+    void waitForInit();
 };
-
-
-#endif //NGRAMS_SOLVER_H

@@ -18,6 +18,8 @@ void ChangeList::insert(ChangeNode *node, Change change)
         node->next = new ChangeNode;
         node->next->change = change;
         node->next->next = tmp;
+        if (node == last)
+            last = node->next;
     }
         // insert after nullptr == insert before head
     else {
@@ -26,7 +28,6 @@ void ChangeList::insert(ChangeNode *node, Change change)
         head->change = change;
         head->next = tmp;
     }
-
 }
 
 void ChangeList::add(int num)

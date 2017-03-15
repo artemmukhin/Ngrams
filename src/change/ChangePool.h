@@ -13,7 +13,7 @@ private:
 
 public:
     ChangePool(HashTable *tree);
-    void add(const char *str, int length, int num);
-    void remove(const char *str, int length, int num);
+    void add(const char *str, uint64_t length, uint64_t num);
+    void remove(const char *str, uint64_t length, uint64_t num);
     void wait();
 };

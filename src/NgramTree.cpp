@@ -30,6 +30,9 @@ void NgramTree::addHelper(Node *start, const HString prefix, const HString suffi
 
 void NgramTree::add(const HString prefix, const HString suffix, int num)
 {
+    pthread_mutex_lock(&mutex);
+    //cout << "NgramTree: add " << prefix.str << "[" << prefix.length << "]" << "_" << suffix.str << " (" << num << ")" << endl;
+
     if (root) {
         addHelper(root, prefix, suffix, num);
     }
@@ -37,6 +40,8 @@ void NgramTree::add(const HString prefix, const HString suffix, int num)
         root = new Node(prefix);
         root->addSuffix(suffix, num);
     }
+
+    pthread_mutex_unlock(&mutex);
 }
 
 bool NgramTree::removeHelper(Node *parent, Node *current, const HString prefix, const HString suffix, int num)
@@ -55,5 +60,10 @@ bool NgramTree::removeHelper(Node *parent, Node *current, const HString prefix, 
 
 bool NgramTree::remove(const HString prefix, const HString suffix, int num)
 {
-    return this->removeHelper(nullptr, this->root, prefix, suffix, num);
+    pthread_mutex_lock(&mutex);
+    //cout << "NgramTree: remove " << prefix.str << "[" << prefix.length << "]" << "_" << suffix.str << " (" << num << ")" << endl;
+    bool res =  this->removeHelper(nullptr, this->root, prefix, suffix, num);
+    pthread_mutex_unlock(&mutex);
+
+    return res;
 }

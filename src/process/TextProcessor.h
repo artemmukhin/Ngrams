@@ -9,14 +9,12 @@
 struct ThreadData
 {
     const char *str;
-    int start;
-    int end;
-    int length;
-    int num;
+    uint64_t start;
+    uint64_t end;
+    uint64_t length;
+    uint64_t num;
 
     pthread_mutex_t mutex;
-    pthread_cond_t *wake_up;
-    bool isStarted;
 
     HashTable *tree;
     FoundSet *result;
@@ -38,5 +36,5 @@ private:
 public:
     TextProcessor() = delete;
     TextProcessor(HashTable *tree);
-    void process(const char *str, int length, int num);
+    void process(const char *str, uint64_t length, uint64_t num);
 };

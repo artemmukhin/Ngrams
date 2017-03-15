@@ -1,10 +1,6 @@
-//
-// Created by opot on 07.03.17.
-//
+#pragma once
 
-#ifndef NGRAMS_QUEUE_H
-#define NGRAMS_QUEUE_H
-
+#include <cstdint>
 struct QueueNode
 {
     const char *str;
@@ -13,7 +9,7 @@ struct QueueNode
 
     QueueNode *next;
 
-    QueueNode(const char *str, int length, int num);
+    QueueNode(const char *str, uint64_t length, uint64_t num);
 };
 
 class Queue
@@ -25,10 +21,7 @@ class Queue
 public:
     Queue();
 
-    void push(const char *str, int length, int num);
+    void push(const char *str, uint64_t length, uint64_t num);
     bool isEmpty();
     QueueNode *pop();
 };
-
-
-#endif //NGRAMS_QUEUE_H

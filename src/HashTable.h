@@ -13,15 +13,13 @@ public:
 
     HashTable();
 
-    void add(const char *str, uint64_t length, int num);
+    void add(const char *str, uint64_t length, uint64_t num);
 
-    void remove(const char *str, uint64_t length, int num);
+    void remove(const char *str, uint64_t length, uint64_t num);
 
     //void clear();//TODO clear func
 
     const SuffixList *suffixesOf(const HString prefix) const;
-
-    string *searchInText(const char *str, uint64_t length);//TODO move to new class
 };
 
 class FoundSet

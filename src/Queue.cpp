@@ -4,7 +4,7 @@
 
 #include "Queue.h"
 
-QueueNode::QueueNode(const char *str, int length, int num)
+QueueNode::QueueNode(const char *str, uint64_t length, uint64_t num)
 {
     this->str = str;
     this->length = length;
@@ -18,7 +18,7 @@ Queue::Queue()
     last = nullptr;
 }
 
-void Queue::push(const char *str, int length, int num)
+void Queue::push(const char *str, uint64_t length, uint64_t num)
 {
     if (head == nullptr) {
         head = new QueueNode(str, length, num);

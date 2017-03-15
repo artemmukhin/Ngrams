@@ -28,6 +28,8 @@ class NgramTree
 private:
     Node *root;
 
+    pthread_mutex_t mutex;
+
     void addHelper(Node *start, const HString prefix, const HString suffix, int num);
 
     bool removeHelper(Node *parent, Node *current, const HString prefix, const HString suffix, int num);
