@@ -1,7 +1,3 @@
-//
-// Created by opot on 07.03.17.
-//
-
 #include "Queue.h"
 
 QueueNode::QueueNode(const char *str, uint64_t length, uint64_t num)

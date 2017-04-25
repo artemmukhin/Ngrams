@@ -2,58 +2,67 @@
 
 ChangePool::ChangePool(HashTable *tree)
 {
+    stackSize = 0;
     pthread_mutex_init(&mutex, NULL);
+    pthread_cond_init(&readyCond, NULL);
+    pthread_cond_init(&finishedCond, NULL);
 
-    for (int i = 0; i < CHANGE_THREAD_NUM; i++) {
-        pthread_cond_init(&finished[i], NULL);
-
-        threads[i].setTree(tree);
-        threads[i].setMutexAndCond(&this->mutex, &this->finished[i], i);
+    for (uint16_t i = 0; i < CHANGE_THREAD_NUM; i++) {
+        threads[i].init(this, tree, i);
+        threads[i].start();
+        threadIsReady(&(threads[i]));
     }
+}
+
+void ChangePool::doAction(const char *str, uint64_t length, uint64_t num, bool isAdd){
+    pthread_mutex_lock(&mutex);
+
+    while (stackSize == 0)
+        pthread_cond_wait(&readyCond, &mutex);
+
+    ChangeThread *freeThread = threadStack[--stackSize];
+
+    pthread_mutex_unlock(&mutex);
+
+    freeThread->setAction(isAdd, str, length, num);
+    //freeThread->signal();
 }
 
 void ChangePool::add(const char *str, uint64_t length, uint64_t num)
 {
-    int i = 0;
-    while (true) {
-        if (threads[i].isEmpty) {
-            threads[i].isAdd = true;
-            threads[i].str = str;
-            threads[i].length = length;
-            threads[i].num = num;
-            //cout << str << "(" << num << ")" << ": " << "addition given to " << i << endl;
-            threads[i].signal();
-            break;
-        }
-        i = (i + 1) % CHANGE_THREAD_NUM;
-    }
+    doAction(str, length, num, true);
 }
 
 void ChangePool::remove(const char *str, uint64_t length, uint64_t num)
 {
-    int i = 0;
-    while (true) {
-        if (threads[i].isEmpty) {
-            threads[i].isAdd = false;
-            threads[i].str = str;
-            threads[i].length = length;
-            threads[i].num = num;
-            //cout << str << "(" << num << ")" << ": " << "deletion given to " << i << endl;
-            threads[i].signal();
-            break;
-        }
-        i = (i + 1) % CHANGE_THREAD_NUM;
-    }
+    doAction(str, length, num, false);
 }
 
-void ChangePool::wait()
+void ChangePool::threadIsReady(ChangeThread *readyThread)
 {
-    for (int i = 0; i < CHANGE_THREAD_NUM; i++) {
+    pthread_mutex_lock(&mutex);
+
+    uint32_t index = stackSize++;
+    threadStack[index] = readyThread;
+
+    if (index == 0)
+        pthread_cond_signal(&readyCond);
+
+    pthread_mutex_unlock(&mutex);
+
+    if (index == CHANGE_THREAD_NUM - 1) {
         pthread_mutex_lock(&mutex);
-        while (!threads[i].isEmpty) {
-            //cout << "ChangePool: wait " << i << endl;
-            pthread_cond_wait(&finished[i], &mutex);
-        }
+        pthread_cond_signal(&finishedCond);
         pthread_mutex_unlock(&mutex);
     }
 }
+
+void ChangePool::waitAllThreads()
+{
+    pthread_mutex_lock(&mutex);
+    while (stackSize < CHANGE_THREAD_NUM) {
+        pthread_cond_wait(&finishedCond, &mutex);
+    }
+    pthread_mutex_unlock(&mutex);
+}
+

@@ -28,6 +28,9 @@ void TextProcessor::process(const char *str, uint64_t length, uint64_t num)
 
     for (int i = 0; i < PROCESS_THREAD_NUM; i++) {
         pthread_create(&threads[i], NULL, routine, (void *) &data[i]);
+    }
+
+    for (int i = 0; i < PROCESS_THREAD_NUM; i++) {
         pthread_join(threads[i], NULL);
     }
 

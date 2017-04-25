@@ -12,7 +12,7 @@ private:
 
     Queue texts;
 
-    ChangePool change;
+    ChangePool changePool;
     TextProcessor processor;
 
 public:

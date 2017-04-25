@@ -4,31 +4,32 @@
 
 #include "../HashTable.h"
 
+class ChangePool;
+
 class ChangeThread
 {
 private:
     pthread_t thread;
     pthread_mutex_t mutex;
-    pthread_cond_t wait;
+    pthread_cond_t readyCond;
+    bool actionIsReady;
 
-    pthread_mutex_t *poolMutex;
-    pthread_cond_t *poolCond;
-
-    static void *routine(void *data);
+    static void *threadFunction(void *data);
 
     HashTable *tree;
+    ChangePool *pool;
 
-public:
-    int numberOfChangeTread;
-    volatile bool isEmpty;
+    int ID;
     bool isAdd;
     const char *str;
     uint64_t length;
     uint64_t num;
 
+public:
     ChangeThread();
-    //ChangeThread(HashTable *tree);
-    void setTree(HashTable *tree);
-    void setMutexAndCond(pthread_mutex_t *mutex, pthread_cond_t *finished, int n);
-    void signal();
+    void init(ChangePool *pool, HashTable *tree, uint16_t id);
+    void start();
+    void routine();
+    void setAction(bool isAdd, const char *str, uint64_t length, uint64_t num);
+    //void signal();
 };

@@ -14,7 +14,6 @@ struct QueueNode
 
 class Queue
 {
-
     QueueNode *head;
     QueueNode *last;
 
